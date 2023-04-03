@@ -11,8 +11,12 @@ body {
 }
 
 .cell {
-    border: .2vmin solid black;
+    border: .1vmin solid lightgray;
     height: 6vmin;
+    font-size: 2.5vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .header {
