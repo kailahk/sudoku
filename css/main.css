@@ -1,0 +1,45 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(9, 6vmin);
+    grid-template-rows: auto;
+}
+
+.cell {
+    border: .2vmin solid black;
+    height: 6vmin;
+}
+
+.header {
+    margin: 3vmin 0;
+}
+
+.keyboard {
+    display: grid;
+    grid-template-columns: repeat(5, 10vmin);
+    grid-template-rows: auto;
+    margin: 2vmin 0;
+}
+
+.number, .X {
+    padding: 1vmin;
+    margin: 1vmin;
+    font-size: 2vmin;
+}
+
+.numbersToggle {
+    width: 30vmin;
+    display: flex;
+    justify-content: space-between;
+}
+
+.normal, .candidate {
+    width: 15vmin;
+    font-size: 1.5vmin;
+    padding: 1vmin;
+}
