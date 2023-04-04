@@ -231,17 +231,17 @@ function init() {
                     'value': boardCell,
                     'numToShow': numsToShow[rowIdx][boardCellIdx] === 0 ? 0 : boardCell,
                     'revealed': numsToShow[rowIdx][boardCellIdx] ? true : false,
-                    'candidates': {
-                        1: false,
-                        2: false,
-                        3: false,
-                        4: false,
-                        5: false,
-                        6: false,
-                        7: false,
-                        8: false,
-                        9: false
-                    },
+                    'candidates': [
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    ],
                     'row': rowIdx,
                 }
                 checkColandBox(rowIdx, boardCellIdx, i)
@@ -256,7 +256,7 @@ function init() {
         cols.forEach(function (column, colIdx) {
             if (column.includes(id)) {
                 currCell['col'] = colIdx;
-            } 
+            }
         });
         boxes.forEach(function (box, boxIdx) {
             if (box.includes(id)) {
@@ -268,7 +268,7 @@ function init() {
     function initTimer() {
         let time = 0;
         function updateTime() {
-            let minutes = Math.floor(time/60);
+            let minutes = Math.floor(time / 60);
             let seconds = time % 60;
             time++;
             if (minutes.toString().length < 2) {
@@ -304,19 +304,36 @@ function render() {
 
     function renderBoard() {
         for (let id = 0; id < 81; id++) {
-            let currCellName = Object.keys(board)
+            let currCellName = Object.keys(board)[id]
             let currCell = document.createElement('div');
-            currCell.setAttribute('id', currCellName[id]);
+            currCell.setAttribute('id', currCellName);
             currCell.setAttribute('class', 'cell')
             allCells.appendChild(currCell);
-            let currCellObj = board[currCellName[id]]
+            let currCellObj = board[currCellName]
             if (currCellObj.numToShow === 0) {
-                currCell.innerHTML = ''
+                currCellObj.candidates.forEach(function (candidate, idx) {
+                    if (candidate === true) {
+                        let currCandidate = document.createElement('div')
+                        currCandidate.innerHTML = idx + 1
+                        currCell.appendChild(currCandidate)
+                        currCell.style.fontWeight = '400'
+                    } else {
+                        let noCandidate = document.createElement('div')
+                        noCandidate.innerHTML = ' '
+                        currCell.appendChild(noCandidate)
+                    }
+                })
+                // currCell.innerHTML = trueCandidates.join('')
+                currCell.style.fontSize = '1vmin'
+                currCell.style.display = 'grid'
+                currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
+                currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
             } else {
                 currCell.innerHTML = currCellObj.numToShow;
             }
             if (currCellObj.revealed === true) {
                 currCell.style.backgroundColor = 'rgb(232,232,232)';
+                // remove event listener
             }
         }
         let highlightedCellEl = document.getElementById(highlightedCell)

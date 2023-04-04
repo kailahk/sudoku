@@ -8,6 +8,7 @@ body {
     display: grid;
     grid-template-columns: repeat(9, 6vmin);
     grid-template-rows: auto;
+    border: .5vmin solid black;
 }
 
 #divider {
