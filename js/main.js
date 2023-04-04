@@ -207,6 +207,7 @@ const keyboardEl = document.getElementById('keyboard')
 
 
 /*----- event listeners -----*/
+allCells.addEventListener('click', handleHighlightCell)
 
 
 /*----- functions -----*/
@@ -245,6 +246,29 @@ function init() {
                     'row': rowIdx,
                 }
                 checkColandBox(rowIdx, boardCellIdx, i)
+                let currCell = document.createElement('div');
+                currCell.setAttribute('id', `R${rowIdx}C${boardCellIdx}`);
+                currCell.setAttribute('class', 'cell')
+                allCells.appendChild(currCell);
+                let currCellObj = board[`R${rowIdx}C${boardCellIdx}`]
+                if (currCellObj.numToShow === 0) {
+                    currCellObj.candidates.forEach(function (candidate, idx) {
+                        if (candidate === true) {
+                            let currCandidate = document.createElement('div')
+                            currCandidate.innerHTML = idx + 1
+                            currCell.appendChild(currCandidate)
+                            currCell.style.fontWeight = '400'
+                        } else {
+                            let noCandidate = document.createElement('div')
+                            noCandidate.innerHTML = ' '
+                            currCell.appendChild(noCandidate)
+                        }
+                    })
+                    currCell.style.fontSize = '1vmin'
+                    currCell.style.display = 'grid'
+                    currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
+                    currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
+                }
                 i++
             })
         })
@@ -299,41 +323,24 @@ function init() {
     render();
 }
 
+function handleHighlightCell(event) {
+    highlightedCell = event.target.id;
+}
+
 function render() {
     renderBoard()
 
     function renderBoard() {
         for (let id = 0; id < 81; id++) {
             let currCellName = Object.keys(board)[id]
-            let currCell = document.createElement('div');
-            currCell.setAttribute('id', currCellName);
-            currCell.setAttribute('class', 'cell')
-            allCells.appendChild(currCell);
             let currCellObj = board[currCellName]
-            if (currCellObj.numToShow === 0) {
-                currCellObj.candidates.forEach(function (candidate, idx) {
-                    if (candidate === true) {
-                        let currCandidate = document.createElement('div')
-                        currCandidate.innerHTML = idx + 1
-                        currCell.appendChild(currCandidate)
-                        currCell.style.fontWeight = '400'
-                    } else {
-                        let noCandidate = document.createElement('div')
-                        noCandidate.innerHTML = ' '
-                        currCell.appendChild(noCandidate)
-                    }
-                })
-                // currCell.innerHTML = trueCandidates.join('')
-                currCell.style.fontSize = '1vmin'
-                currCell.style.display = 'grid'
-                currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
-                currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
-            } else {
-                currCell.innerHTML = currCellObj.numToShow;
+            let currCell = document.getElementById(currCellName)
+            if (currCellObj.numToShow !== 0) {
+                currCell.innerHTML = currCellObj.numToShow
             }
             if (currCellObj.revealed === true) {
                 currCell.style.backgroundColor = 'rgb(232,232,232)';
-                // remove event listener
+                // currCell.removeEventListener('click', handleHighlightCell)
             }
         }
         let highlightedCellEl = document.getElementById(highlightedCell)
