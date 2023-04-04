@@ -271,16 +271,22 @@ function init() {
             let minutes = Math.floor(time/60);
             let seconds = time % 60;
             time++;
-            timerEl.innerHTML = `${minutes}:${seconds}`;
+            // timerEl.innerHTML = `${minutes}:${seconds}`;
         }
         let clock = setInterval(updateTime, 1000);
     }
+
     winner = false;
     keyboardType = false;
     highlightedCell = [0, 0];
     initTimer();
     initBoard();
     console.log(board)
+    render();
+}
+
+function render() {
+
 }
 
 init();

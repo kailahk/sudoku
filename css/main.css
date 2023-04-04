@@ -10,6 +10,11 @@ body {
     grid-template-rows: auto;
 }
 
+#divider {
+    border-top: .2vmin solid lightgray;
+    width: 55vmin;
+    margin: 2vmin 0;
+}
 .cell {
     border: .1vmin solid lightgray;
     height: 6vmin;
@@ -27,13 +32,15 @@ body {
     display: grid;
     grid-template-columns: repeat(5, 10vmin);
     grid-template-rows: auto;
-    margin: 2vmin 0;
+    margin: 1vmin 0;
 }
 
 .number, .X {
-    padding: 1vmin;
-    margin: 1vmin;
+    padding: .75vmin 1vmin;
+    margin: .5vmin;
     font-size: 2vmin;
+    border: .2vmin solid lightgray;
+    font-weight: bolder;
 }
 
 .numbersToggle {
@@ -45,5 +52,8 @@ body {
 #normal, #candidate {
     width: 15vmin;
     font-size: 1.5vmin;
-    padding: 1vmin;
+    padding: .5vmin 1vmin;
+    background-color: white;
+    border: .2vmin solid lightgray;
+    color: lightgray
 }
