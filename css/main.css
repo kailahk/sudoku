@@ -59,3 +59,8 @@ body {
     border: .2vmin solid lightgray;
     color: lightgray
 }
+
+#timer {
+    height: 4vmin;
+    position: relative;
+}

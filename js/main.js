@@ -34,7 +34,7 @@ let keyboardType; // false = normal, true = candidate
 let highlightedCell;
 const board = {};
 
-// below code sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
+// code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
 
     // Constructor
@@ -271,16 +271,30 @@ function init() {
             let minutes = Math.floor(time/60);
             let seconds = time % 60;
             time++;
-            // timerEl.innerHTML = `${minutes}:${seconds}`;
+            if (minutes.toString().length < 2) {
+                minutes = `0${minutes}`
+            }
+            if (seconds.toString().length < 2) {
+                seconds = `0${seconds}`
+            }
+            timerEl.innerHTML = `${minutes}:${seconds}`;
         }
         let clock = setInterval(updateTime, 1000);
     }
 
+    function initHighlightedCell() {
+        for (let j = 0; j < 81; j++) {
+            if (board[Object.keys(board)[j]].numToShow === 0) {
+                return highlightedCell = Object.keys(board)[j];
+            }
+        }
+    }
+
     winner = false;
     keyboardType = false;
-    highlightedCell = [0, 0];
     initTimer();
     initBoard();
+    highlightedCell = initHighlightedCell();
     console.log(board)
     render();
 }
@@ -296,12 +310,19 @@ function render() {
             currCell.setAttribute('class', 'cell')
             allCells.appendChild(currCell);
             let currCellObj = board[currCellName[id]]
-            if (currCellObj.numToShow !== 0) {
-                currCell.innerHTML = currCellObj.value
-                currCell.style.backgroundColor = '	rgb(232,232,232)'
+            if (currCellObj.numToShow === 0) {
+                currCell.innerHTML = ''
+            } else {
+                currCell.innerHTML = currCellObj.numToShow;
+            }
+            if (currCellObj.revealed === true) {
+                currCell.style.backgroundColor = 'rgb(232,232,232)';
             }
         }
+        let highlightedCellEl = document.getElementById(highlightedCell)
+        highlightedCellEl.style.backgroundColor = 'gold'
     }
+
 }
 
 init();
