@@ -286,7 +286,22 @@ function init() {
 }
 
 function render() {
+    renderBoard()
 
+    function renderBoard() {
+        for (let id = 0; id < 81; id++) {
+            let currCellName = Object.keys(board)
+            let currCell = document.createElement('div');
+            currCell.setAttribute('id', currCellName[id]);
+            currCell.setAttribute('class', 'cell')
+            allCells.appendChild(currCell);
+            let currCellObj = board[currCellName[id]]
+            if (currCellObj.numToShow !== 0) {
+                currCell.innerHTML = currCellObj.value
+                currCell.style.backgroundColor = '	rgb(232,232,232)'
+            }
+        }
+    }
 }
 
 init();

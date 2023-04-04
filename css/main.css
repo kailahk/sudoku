@@ -19,6 +19,7 @@ body {
     border: .1vmin solid lightgray;
     height: 6vmin;
     font-size: 2.5vmin;
+    font-weight: bolder;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,6 +42,7 @@ body {
     font-size: 2vmin;
     border: .2vmin solid lightgray;
     font-weight: bolder;
+    background-color:rgb(232,232,232);
 }
 
 .numbersToggle {
