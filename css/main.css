@@ -4,7 +4,7 @@ body {
     align-items: center;
 }
 
-.board {
+#board {
     display: grid;
     grid-template-columns: repeat(9, 6vmin);
     grid-template-rows: auto;
@@ -23,7 +23,7 @@ body {
     margin: 3vmin 0;
 }
 
-.keyboard {
+#keyboard {
     display: grid;
     grid-template-columns: repeat(5, 10vmin);
     grid-template-rows: auto;
@@ -42,7 +42,7 @@ body {
     justify-content: space-between;
 }
 
-.normal, .candidate {
+#normal, #candidate {
     width: 15vmin;
     font-size: 1.5vmin;
     padding: 1vmin;

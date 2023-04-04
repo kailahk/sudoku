@@ -23,13 +23,15 @@ const boxes = [
     [60, 61, 62, 69, 70, 71, 78, 79, 80]
 ]
 
-/*----- state variables -----*/
-let timer = '00:00'
-let winner = false
-let keyboardType = false // false = normal, true = candidate
-let highlightedCell = [0, 0]
 let answer = [];
 let numsToShow = [];
+
+
+/*----- state variables -----*/
+let timer;
+let winner;
+let keyboardType; // false = normal, true = candidate
+let highlightedCell;
 const board = {};
 
 // below code sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
@@ -173,7 +175,6 @@ class Sudoku {
         for (let i = 0; i < this.N; i++) {
             answer.push([...this.mat[i]])
         }
-        console.log('answer', answer)
     }
 
     // Remove the K no. of digits to
@@ -191,16 +192,18 @@ class Sudoku {
             }
         }
         numsToShow = this.mat
-        console.log('board', numsToShow)
         return;
     }
 }
 
 
 
-
-
 /*----- cached elements  -----*/
+const allCells = document.getElementById('board')
+const timerEl = document.getElementById('timer')
+const candidateBtnEl = document.getElementById('candidate')
+const normalBtnEl = document.getElementById('normal')
+const keyboardEl = document.getElementById('keyboard')
 
 
 /*----- event listeners -----*/
@@ -245,7 +248,6 @@ function init() {
                 i++
             })
         })
-        console.log(board)
     }
 
     function checkColandBox(rowNum, cellNum, id) {
@@ -258,13 +260,27 @@ function init() {
         });
         boxes.forEach(function (box, boxIdx) {
             if (box.includes(id)) {
-                console.log(box, boxIdx, id)
                 currCell['box'] = boxIdx
             }
         });
     }
 
+    function initTimer() {
+        let time = 0;
+        function updateTime() {
+            let minutes = Math.floor(time/60);
+            let seconds = time % 60;
+            time++;
+            timerEl.innerHTML = `${minutes}:${seconds}`;
+        }
+        let clock = setInterval(updateTime, 1000);
+    }
+    winner = false;
+    keyboardType = false;
+    highlightedCell = [0, 0];
+    initTimer();
     initBoard();
+    console.log(board)
 }
 
 init();
