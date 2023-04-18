@@ -40,7 +40,6 @@ body {
 .number, .X {
     padding: .75vmin 1vmin;
     margin: .5vmin;
-    font-size: 2vmin;
     border: .2vmin solid lightgray;
     font-weight: bolder;
     background-color:rgb(232,232,232);
@@ -59,6 +58,11 @@ body {
     background-color: white;
     border: .2vmin solid lightgray;
     color: lightgray
+}
+
+#normal {
+    background-color: black;
+    color: white;
 }
 
 #timer {

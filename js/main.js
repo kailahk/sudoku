@@ -175,12 +175,13 @@ const allCells = document.getElementById('board')
 const timerEl = document.getElementById('timer')
 const candidateBtnEl = document.getElementById('candidate')
 const normalBtnEl = document.getElementById('normal')
-const keyboardEl = document.getElementById('keyboard')
+const keyboardEls = document.getElementById('keyboard').children
 const highlightedCellEl = document.getElementById(highlightedCell)
 
 /*----- event listeners -----*/
 allCells.addEventListener('click', handleHighlightCell)
-
+normalBtnEl.addEventListener('click', handleKeyboardSwitch)
+candidateBtnEl.addEventListener('click', handleKeyboardSwitch)
 
 /*----- functions -----*/
 
@@ -304,8 +305,19 @@ function handleHighlightCell(event) {
     render();
 }
 
+function handleKeyboardSwitch(event) {
+    if (event.target.id === 'normal') {
+        keyboardType = false
+    }
+    if (event.target.id === 'candidate') {
+        keyboardType = true
+    }
+    render();
+}
+
 function render() {
     renderBoard()
+    renderKeyboard()
 
     function renderBoard() {
         for (let id = 0; id < 81; id++) {
@@ -322,6 +334,31 @@ function render() {
             }
             let highlightedCellEl = document.getElementById(highlightedCell)
             highlightedCellEl.style.backgroundColor = 'gold'
+        }
+    }
+
+    function renderKeyboard() {
+        if (keyboardType) {
+            candidateBtnEl.style.backgroundColor = 'black';
+            candidateBtnEl.style.color = 'white';
+            candidateBtnEl.style.borderColor = 'black'
+            normalBtnEl.style.backgroundColor = 'white';
+            normalBtnEl.style.color = 'lightgrey';
+            normalBtnEl.style.borderColor = 'lightgrey';
+            for (let i = 0; i < keyboardEls.length; i++) {
+                keyboardEls[i].style.fontSize = '1.3vmin';
+                keyboardEls[i].style.height = '5vmin';
+            }
+        } else {
+            candidateBtnEl.style.backgroundColor = 'white';
+            candidateBtnEl.style.color = 'lightgrey';
+            candidateBtnEl.style.borderColor = 'lightgrey'
+            normalBtnEl.style.backgroundColor = 'black';
+            normalBtnEl.style.color = 'white';
+            normalBtnEl.style.borderColor = 'black'
+            for (let i = 0; i < keyboardEls.length; i++) {
+                keyboardEls[i].style.fontSize = '2vmin';
+            }
         }
     }
 }
