@@ -23,9 +23,6 @@ const boxes = [
     [60, 61, 62, 69, 70, 71, 78, 79, 80]
 ]
 
-let answer = [];
-let numsToShow = [];
-
 
 /*----- state variables -----*/
 let timer;
@@ -33,6 +30,8 @@ let winner;
 let keyboardType; // false = normal, true = candidate
 let highlightedCell;
 const board = {};
+let answer = [];
+let numsToShow = [];
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -177,7 +176,7 @@ const timerEl = document.getElementById('timer')
 const candidateBtnEl = document.getElementById('candidate')
 const normalBtnEl = document.getElementById('normal')
 const keyboardEl = document.getElementById('keyboard')
-
+const highlightedCellEl = document.getElementById(highlightedCell)
 
 /*----- event listeners -----*/
 allCells.addEventListener('click', handleHighlightCell)
@@ -282,6 +281,7 @@ function init() {
     function initHighlightedCell() {
         for (let j = 0; j < 81; j++) {
             if (board[Object.keys(board)[j]].numToShow === 0) {
+                console.log(Object.keys(board)[j])
                 return highlightedCell = Object.keys(board)[j];
             }
         }
@@ -297,7 +297,11 @@ function init() {
 }
 
 function handleHighlightCell(event) {
-    highlightedCell = event.target.id;
+    let currCellObj = board[event.target.id]
+    if (currCellObj.revealed !== true) {
+        highlightedCell = event.target.id;
+    }
+    render();
 }
 
 function render() {
@@ -309,17 +313,17 @@ function render() {
             let currCellObj = board[currCellName]
             let currCell = document.getElementById(currCellName)
             if (currCellObj.numToShow !== 0) {
-                currCell.innerHTML = currCellObj.numToShow
-            }
-            if (currCellObj.revealed === true) {
+                currCell.innerHTML = currCellObj.numToShow;
                 currCell.style.backgroundColor = 'rgb(232,232,232)';
-                // currCell.removeEventListener('click', handleHighlightCell)
+                currCell.removeEventListener('click', handleHighlightCell)
             }
+            if (currCellObj.id !== highlightedCell && currCellObj.revealed === false) {
+                currCell.style.backgroundColor = 'white'
+            }
+            let highlightedCellEl = document.getElementById(highlightedCell)
+            highlightedCellEl.style.backgroundColor = 'gold'
         }
-        let highlightedCellEl = document.getElementById(highlightedCell)
-        highlightedCellEl.style.backgroundColor = 'gold'
     }
-
 }
 
 init();
