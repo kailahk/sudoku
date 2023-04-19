@@ -182,6 +182,9 @@ const highlightedCellEl = document.getElementById(highlightedCell)
 allCells.addEventListener('click', handleHighlightCell)
 normalBtnEl.addEventListener('click', handleKeyboardSwitch)
 candidateBtnEl.addEventListener('click', handleKeyboardSwitch)
+for (let i = 0; i < keyboardEls.length; i++) {
+    keyboardEls[i].addEventListener('click', handleNumberClick)
+}
 
 /*----- functions -----*/
 
@@ -224,24 +227,26 @@ function init() {
                 currCell.setAttribute('class', 'cell')
                 allCells.appendChild(currCell);
                 let currCellObj = board[`R${rowIdx}C${boardCellIdx}`]
-                if (currCellObj.numToShow === 0) {
-                    currCellObj.candidates.forEach(function (candidate, idx) {
-                        if (candidate === true) {
-                            let currCandidate = document.createElement('div')
-                            currCandidate.innerHTML = idx + 1
-                            currCell.appendChild(currCandidate)
-                            currCell.style.fontWeight = '400'
-                        } else {
-                            let noCandidate = document.createElement('div')
-                            noCandidate.innerHTML = ' '
-                            currCell.appendChild(noCandidate)
-                        }
-                    })
-                    currCell.style.fontSize = '1vmin'
-                    currCell.style.display = 'grid'
-                    currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
-                    currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
-                }
+                // if (currCellObj.numToShow === 0) {
+                //     currCellObj.candidates.forEach(function (candidate, idx) {
+                //         if (candidate === true) {
+                //             let currCandidate = document.createElement('div')
+                //             currCandidate.innerHTML = idx + 1
+                //             currCell.appendChild(currCandidate)
+                //             currCell.style.fontWeight = '400'
+                //         } else {
+                //             let noCandidate = document.createElement('div')
+                //             noCandidate.innerHTML = ' '
+                //             currCell.appendChild(noCandidate)
+                //         }
+                //     })
+                //     currCell.style.fontSize = '1vmin'
+                //     currCell.style.display = 'grid'
+                //     currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
+                //     currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
+                // } else {
+                currCell.style.fontSize = '2.5vmin'
+                // }
                 i++
             })
         })
@@ -282,7 +287,6 @@ function init() {
     function initHighlightedCell() {
         for (let j = 0; j < 81; j++) {
             if (board[Object.keys(board)[j]].numToShow === 0) {
-                console.log(Object.keys(board)[j])
                 return highlightedCell = Object.keys(board)[j];
             }
         }
@@ -315,6 +319,24 @@ function handleKeyboardSwitch(event) {
     render();
 }
 
+function handleNumberClick(event) {
+    if (keyboardType === false) {
+        board[highlightedCell].numToShow = event.target.innerHTML
+    } else {
+        if (board[highlightedCell].candidates[event.target.innerHTML - 1]) {
+            if (board[highlightedCell].numToShow === 0) {
+                board[highlightedCell].candidates[event.target.innerHTML - 1] = false
+            } else {
+                board[highlightedCell].numToShow = 0
+            }
+        } else {
+            board[highlightedCell].candidates[event.target.innerHTML - 1] = true;
+            board[highlightedCell].numToShow = 0
+        }
+    }
+    render();
+}
+
 function render() {
     renderBoard()
     renderKeyboard()
@@ -324,10 +346,21 @@ function render() {
             let currCellName = Object.keys(board)[id]
             let currCellObj = board[currCellName]
             let currCell = document.getElementById(currCellName)
-            if (currCellObj.numToShow !== 0) {
+            if (currCellObj.numToShow !== 0 && currCellObj.revealed === true) {
+                currCell.removeEventListener('click', handleHighlightCell)
                 currCell.innerHTML = currCellObj.numToShow;
                 currCell.style.backgroundColor = 'rgb(232,232,232)';
-                currCell.removeEventListener('click', handleHighlightCell)
+            }
+            if (currCellObj.numToShow !== 0 && currCellObj.revealed === false) {
+                currCell.innerHTML = currCellObj.numToShow;
+                currCell.style.fontSize = '2.5vmin'
+            }
+            if (currCellObj.numToShow === 0) {
+                if (currCellObj.candidates.every((candidate) => candidate === false)) {
+                    currCell.innerHTML = ''
+                } else {
+                    renderCandidates(currCellObj, currCell)
+                }
             }
             if (currCellObj.id !== highlightedCell && currCellObj.revealed === false) {
                 currCell.style.backgroundColor = 'white'
@@ -337,6 +370,16 @@ function render() {
         }
     }
 
+    function renderCandidates(currCellObj, currCell) {
+        let candidatesToRender = []
+        currCellObj.candidates.forEach((candidate, idx) => candidate === true ? candidatesToRender.push(idx + 1) : candidatesToRender.push(' '))
+        candidatesToRender.forEach((candidate, idx) => {
+            currCell.innerHTML = candidatesToRender.join('')
+            currCell.style.fontSize = '1vmin'
+        })
+    }
+
+
     function renderKeyboard() {
         if (keyboardType) {
             candidateBtnEl.style.backgroundColor = 'black';
@@ -345,7 +388,7 @@ function render() {
             normalBtnEl.style.backgroundColor = 'white';
             normalBtnEl.style.color = 'lightgrey';
             normalBtnEl.style.borderColor = 'lightgrey';
-            for (let i = 0; i < keyboardEls.length; i++) {
+            for (let i = 0; i < keyboardEls.length - 1; i++) {
                 keyboardEls[i].style.fontSize = '1.3vmin';
                 keyboardEls[i].style.height = '5vmin';
             }
