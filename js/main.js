@@ -227,6 +227,13 @@ function init() {
                 currCell.setAttribute('class', 'cell')
                 allCells.appendChild(currCell);
                 let currCellObj = board[`R${rowIdx}C${boardCellIdx}`]
+                console.log(rowIdx, boardCellIdx)
+                if (rowIdx === 2 || rowIdx === 5) {
+                    currCell.style.borderBottom = '.5vmin solid grey'
+                }
+                if (cols[2].includes(boardCellIdx) || cols[5].includes(boardCellIdx)) {
+                    currCell.style.borderRight = '.5vmin solid grey'
+                }
                 // if (currCellObj.numToShow === 0) {
                 //     currCellObj.candidates.forEach(function (candidate, idx) {
                 //         if (candidate === true) {
@@ -245,7 +252,7 @@ function init() {
                 //     currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
                 //     currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
                 // } else {
-                currCell.style.fontSize = '2.5vmin'
+                currCell.style.fontSize = '3.5vmin'
                 // }
                 i++
             })
