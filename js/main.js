@@ -227,7 +227,6 @@ function init() {
                 currCell.setAttribute('class', 'cell')
                 allCells.appendChild(currCell);
                 let currCellObj = board[`R${rowIdx}C${boardCellIdx}`]
-                console.log(rowIdx, boardCellIdx)
                 if (rowIdx === 2 || rowIdx === 5) {
                     currCell.style.borderBottom = '.5vmin solid grey'
                 }
@@ -328,8 +327,19 @@ function handleKeyboardSwitch(event) {
 
 function handleNumberClick(event) {
     if (keyboardType === false) {
-        board[highlightedCell].numToShow = event.target.innerHTML
+        if (event.target.innerHTML === 'X') {
+            if (board[highlightedCell].numToShow === 0) {
+                board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
+            } else {
+                board[highlightedCell].numToShow = 0
+            }
+        } else {
+            board[highlightedCell].numToShow = event.target.innerHTML
+        }
     } else {
+        if (event.target.innerHTML === 'X') {
+            board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
+        }
         if (board[highlightedCell].candidates[event.target.innerHTML - 1]) {
             if (board[highlightedCell].numToShow === 0) {
                 board[highlightedCell].candidates[event.target.innerHTML - 1] = false
@@ -360,7 +370,7 @@ function render() {
             }
             if (currCellObj.numToShow !== 0 && currCellObj.revealed === false) {
                 currCell.innerHTML = currCellObj.numToShow;
-                currCell.style.fontSize = '2.5vmin'
+                currCell.style.fontSize = '3.5vmin'
             }
             if (currCellObj.numToShow === 0) {
                 if (currCellObj.candidates.every((candidate) => candidate === false)) {
