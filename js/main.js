@@ -341,7 +341,16 @@ function handleKeyboardSwitch(event) {
 function handleNumberClick(event) {
     if (keyboardType === false) {
         if (event.target.innerHTML === 'X') {
-            board[highlightedCell].conflict = false
+            if (board[highlightedCell].conflict) {
+                board[highlightedCell].conflict = false
+                let currRow = parseInt(highlightedCell.split('')[1])
+                let currCol = parseInt(highlightedCell.split('')[3])
+                numsToShow[currRow].forEach((num, idx) => {
+                    if (num === board[highlightedCell].numToShow) {
+                        board[`R${currRow}C${idx}`].conflict = false
+                    }
+                })
+            }
             if (board[highlightedCell].numToShow === 0) {
                 board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
             } else {
@@ -349,6 +358,16 @@ function handleNumberClick(event) {
                 numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
             }
         } else {
+            if (board[highlightedCell].conflict) {
+                board[highlightedCell].conflict = false
+                let currRow = parseInt(highlightedCell.split('')[1])
+                let currCol = parseInt(highlightedCell.split('')[3])
+                numsToShow[currRow].forEach((num, idx) => {
+                    if (num === board[highlightedCell].numToShow) {
+                        board[`R${currRow}C${idx}`].conflict = false
+                    }
+                })
+            }
             board[highlightedCell].numToShow = parseInt(event.target.innerHTML)
             numsToShow[board[highlightedCell].row][board[highlightedCell].col] = parseInt(event.target.innerHTML)
         }
@@ -460,14 +479,7 @@ function render() {
                             currConflictCell.conflict = true
                         }
                     })
-                } else {
-                    row.forEach((num, idx4) => {
-                        let currConflictCell = board[`R${idx1}C${idx4}`]
-                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
-                            currConflictCell.conflict = false
-                        }
-                    })
-                }
+                } 
             }
         })
     }
