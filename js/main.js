@@ -220,18 +220,32 @@ function init() {
                         false
                     ],
                     'row': rowIdx,
+                    'conflict': false
                 }
                 checkColandBox(rowIdx, boardCellIdx, i)
                 let currCell = document.createElement('div');
                 currCell.setAttribute('id', `R${rowIdx}C${boardCellIdx}`);
                 currCell.setAttribute('class', 'cell')
                 allCells.appendChild(currCell);
+                for (let i = 0; i < 9; i++) {
+                    currCell.appendChild(document.createElement('div'))
+                    currCell.style.display = 'grid'
+                }
+                currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
+                currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
+                currCell.children[8].style.backgroundColor = 'red'
+                currCell.children[8].style.height = '1vmin'
+                currCell.children[8].style.width = '1vmin'
+                currCell.children[8].style.borderRadius = '50%'
+                currCell.children[8].style.marginLeft = '.5vmin'
+                currCell.children[8].style.visibility = 'hidden'
                 let currCellObj = board[`R${rowIdx}C${boardCellIdx}`]
                 if (rowIdx === 2 || rowIdx === 5) {
                     currCell.style.borderBottom = '.5vmin solid grey'
                 }
                 if (cols[2].includes(boardCellIdx) || cols[5].includes(boardCellIdx)) {
                     currCell.style.borderRight = '.5vmin solid grey'
+                    currCell.style.paddingRight = '.5vmin'
                 }
                 // if (currCellObj.numToShow === 0) {
                 //     currCellObj.candidates.forEach(function (candidate, idx) {
@@ -303,7 +317,6 @@ function init() {
     initTimer();
     initBoard();
     highlightedCell = initHighlightedCell();
-    console.log(board)
     render();
 }
 
@@ -328,13 +341,16 @@ function handleKeyboardSwitch(event) {
 function handleNumberClick(event) {
     if (keyboardType === false) {
         if (event.target.innerHTML === 'X') {
+            board[highlightedCell].conflict = false
             if (board[highlightedCell].numToShow === 0) {
                 board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
             } else {
                 board[highlightedCell].numToShow = 0
+                numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
             }
         } else {
-            board[highlightedCell].numToShow = event.target.innerHTML
+            board[highlightedCell].numToShow = parseInt(event.target.innerHTML)
+            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = parseInt(event.target.innerHTML)
         }
     } else {
         if (event.target.innerHTML === 'X') {
@@ -345,10 +361,12 @@ function handleNumberClick(event) {
                 board[highlightedCell].candidates[event.target.innerHTML - 1] = false
             } else {
                 board[highlightedCell].numToShow = 0
+                numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
             }
         } else {
             board[highlightedCell].candidates[event.target.innerHTML - 1] = true;
             board[highlightedCell].numToShow = 0
+            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
         }
     }
     render();
@@ -363,24 +381,30 @@ function render() {
             let currCellName = Object.keys(board)[id]
             let currCellObj = board[currCellName]
             let currCell = document.getElementById(currCellName)
-            if (currCellObj.numToShow !== 0 && currCellObj.revealed === true) {
-                currCell.removeEventListener('click', handleHighlightCell)
-                currCell.innerHTML = currCellObj.numToShow;
-                currCell.style.backgroundColor = 'rgb(232,232,232)';
-            }
-            if (currCellObj.numToShow !== 0 && currCellObj.revealed === false) {
-                currCell.innerHTML = currCellObj.numToShow;
-                currCell.style.fontSize = '3.5vmin'
+            checkConflicts()
+            if (currCellObj.numToShow !== 0) {
+                currCell.children[4].innerHTML = currCellObj.numToShow;
+                if (currCellObj.revealed === true) {
+                    currCell.removeEventListener('click', handleHighlightCell)
+                    currCell.style.backgroundColor = 'rgb(232,232,232)';
+                } else {
+                    currCell.style.fontSize = '3.5vmin'
+                }
             }
             if (currCellObj.numToShow === 0) {
                 if (currCellObj.candidates.every((candidate) => candidate === false)) {
-                    currCell.innerHTML = ''
+                    currCell.children[4].innerHTML = ''
                 } else {
                     renderCandidates(currCellObj, currCell)
                 }
             }
             if (currCellObj.id !== highlightedCell && currCellObj.revealed === false) {
                 currCell.style.backgroundColor = 'white'
+            }
+            if (currCellObj.conflict === true) {
+                currCell.children[8].style.visibility = 'visible'
+            } else {
+                currCell.children[8].style.visibility = 'hidden'
             }
             let highlightedCellEl = document.getElementById(highlightedCell)
             highlightedCellEl.style.backgroundColor = 'gold'
@@ -420,6 +444,32 @@ function render() {
                 keyboardEls[i].style.fontSize = '2vmin';
             }
         }
+    }
+
+    function checkConflicts() {
+        numsToShow.forEach((row, idx1) => {
+            let countOfEachNum = {}
+            row.forEach((num, idx2) => {
+                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
+            })
+            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
+                if (Object.entries(countOfEachNum)[i][1] > 1) {
+                    row.forEach((num, idx3) => {
+                        let currConflictCell = board[`R${idx1}C${idx3}`]
+                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                            currConflictCell.conflict = true
+                        }
+                    })
+                } else {
+                    row.forEach((num, idx4) => {
+                        let currConflictCell = board[`R${idx1}C${idx4}`]
+                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                            currConflictCell.conflict = false
+                        }
+                    })
+                }
+            }
+        })
     }
 }
 
