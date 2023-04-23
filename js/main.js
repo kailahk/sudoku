@@ -32,7 +32,8 @@ let highlightedCell;
 const board = {};
 let answer = [];
 let numsToShow = [];
-let newCols2 = []
+let columnVals = [];
+let boxVals = [];
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -233,10 +234,6 @@ function init() {
                     currCell.appendChild(document.createElement('div'))
                     currCell.style.display = 'grid'
                 }
-                // the below is not solving error upon clicking grey cells
-                if (board[`R${rowIdx}C${boardCellIdx}`].revealed === true) {
-                    currCell.removeEventListener('click', handleHighlightCell)
-                }
                 currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
                 currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
                 currCell.children[8].style.backgroundColor = 'red'
@@ -311,6 +308,11 @@ function handleHighlightCell(event) {
     if (event.target.id.length && !board[event.target.id].revealed) {
         highlightedCell = event.target.id;
     }
+    if (!event.target.id.length) {
+        if (!board[event.target.parentElement.id].revealed) {
+            highlightedCell = event.target.parentElement.id;
+        }
+    }
     render();
 }
 
@@ -336,7 +338,7 @@ function handleNumberClick(event) {
                         board[`R${currRow}C${idx}`].conflict = false
                     }
                 })
-                newCols2[currCol].forEach((num, idx) => {
+                columnVals[currCol].forEach((num, idx) => {
                     if (num === board[highlightedCell].numToShow) {
                         board[`R${idx}C${currCol}`].conflict = false
                     }
@@ -358,7 +360,7 @@ function handleNumberClick(event) {
                         board[`R${currRow}C${idx}`].conflict = false
                     }
                 })
-                newCols2[currCol].forEach((num, idx) => {
+                columnVals[currCol].forEach((num, idx) => {
                     if (num === board[highlightedCell].numToShow) {
                         board[`R${idx}C${currCol}`].conflict = false
                     }
@@ -483,7 +485,7 @@ function render() {
                 }
             }
         })
-        newCols2 = newCols
+        columnVals = newCols
         newCols.forEach((column, idx4) => {
             let countOfEachNum = {}
             column.forEach((num, idx5) => {
