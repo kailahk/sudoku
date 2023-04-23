@@ -463,7 +463,8 @@ function render() {
     }
 
     function checkConflicts() {
-        let newCols = []
+        let newCols = [];
+        let newBoxes = [];
         numsToShow.forEach((row, idx1) => {
             let countOfEachNum = {}
             row.forEach((num, idx2) => {
@@ -472,6 +473,31 @@ function render() {
                     newCols[idx2].push(num)
                 } else {
                     newCols[idx2] = [num]
+                }
+                if (idx1 < 3) {
+                    if (idx2 < 3) {
+                        newBoxes[0] ? newBoxes[0].push(num) : newBoxes[0] = [num]
+                    } else if (idx2 < 6) {
+                        newBoxes[1] ? newBoxes[1].push(num) : newBoxes[1] = [num]
+                    } else if (idx2 < 9) {
+                        newBoxes[2] ? newBoxes[2].push(num) : newBoxes[2] = [num]
+                    }
+                } else if (idx1 < 6) {
+                    if (idx2 < 3) {
+                        newBoxes[3] ? newBoxes[3].push(num) : newBoxes[3] = [num]
+                    } else if (idx2 < 6) {
+                        newBoxes[4] ? newBoxes[4].push(num) : newBoxes[4] = [num]
+                    } else if (idx2 < 9) {
+                        newBoxes[5] ? newBoxes[5].push(num) : newBoxes[5] = [num]
+                    }
+                } else if (idx1 < 9) {
+                    if (idx2 < 3) {
+                        newBoxes[6] ? newBoxes[6].push(num) : newBoxes[6] = [num]
+                    } else if (idx2 < 6) {
+                        newBoxes[7] ? newBoxes[7].push(num) : newBoxes[7] = [num]
+                    } else if (idx2 < 9) {
+                        newBoxes[8] ? newBoxes[8].push(num) : newBoxes[8] = [num]
+                    }
                 }
             })
             for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
@@ -493,12 +519,71 @@ function render() {
             })
             for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
                 if (Object.entries(countOfEachNum)[i][1] > 1) {
-                        column.forEach((num, idx6) => {
-                            currCell = board[`R${idx6}C${idx4}`]
-                            if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
-                                currCell.conflict = true
+                    column.forEach((num, idx6) => {
+                        currCell = board[`R${idx6}C${idx4}`]
+                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                            currCell.conflict = true
+                        }
+                    })
+                }
+            }
+        })
+        boxVals = newBoxes
+        newBoxes.forEach((box, idx7) => {
+            let countOfEachNum = {}
+            box.forEach((num, idx8) => {
+                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
+            })
+            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
+                if (Object.entries(countOfEachNum)[i][1] > 1) {
+                    box.forEach((num, idx9) => {
+                        let column;
+                        let row;
+                        if (idx7 < 3) {
+                            row = Math.floor(idx9 / 3)
+                        } else if (idx7 < 6) {
+                            row = Math.floor(idx9 / 3) + 3
+                        } else if (idx7 < 9) {
+                            row = Math.floor(idx9 / 3) + 6
+                        }
+                        if (idx9 === 0 || idx9 === 3 || idx9 === 6) {
+                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
+                                column = 0
                             }
-                        })
+                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
+                                column = 3
+                            }
+                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
+                                column = 6
+                            }
+                        }
+                        if (idx9 === 1 || idx9 === 4 || idx9 === 7) {
+                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
+                                column = 1
+                            }
+                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
+                                column = 4
+                            }
+                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
+                                column = 7
+                            }
+                        }
+                        if (idx9 === 2 || idx9 === 5 || idx9 === 8) {
+                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
+                                column = 2
+                            }
+                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
+                                column = 5
+                            }
+                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
+                                column = 8
+                            }
+                        }
+                        currCell = board[`R${row}C${column}`]
+                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                            currCell.conflict = true
+                        }
+                    })
                 }
             }
         })
