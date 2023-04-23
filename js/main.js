@@ -32,6 +32,7 @@ let highlightedCell;
 const board = {};
 let answer = [];
 let numsToShow = [];
+let newCols2 = []
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -197,6 +198,7 @@ function init() {
         sudoku.generateBoard()
         sudoku.removeKDigits()
         initCells()
+        console.log(board)
     }
 
     function initCells() {
@@ -231,6 +233,10 @@ function init() {
                     currCell.appendChild(document.createElement('div'))
                     currCell.style.display = 'grid'
                 }
+                // the below is not solving error upon clicking grey cells
+                if (board[`R${rowIdx}C${boardCellIdx}`].revealed === true) {
+                    currCell.removeEventListener('click', handleHighlightCell)
+                }
                 currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
                 currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
                 currCell.children[8].style.backgroundColor = 'red'
@@ -247,26 +253,7 @@ function init() {
                     currCell.style.borderRight = '.5vmin solid grey'
                     currCell.style.paddingRight = '.5vmin'
                 }
-                // if (currCellObj.numToShow === 0) {
-                //     currCellObj.candidates.forEach(function (candidate, idx) {
-                //         if (candidate === true) {
-                //             let currCandidate = document.createElement('div')
-                //             currCandidate.innerHTML = idx + 1
-                //             currCell.appendChild(currCandidate)
-                //             currCell.style.fontWeight = '400'
-                //         } else {
-                //             let noCandidate = document.createElement('div')
-                //             noCandidate.innerHTML = ' '
-                //             currCell.appendChild(noCandidate)
-                //         }
-                //     })
-                //     currCell.style.fontSize = '1vmin'
-                //     currCell.style.display = 'grid'
-                //     currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
-                //     currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
-                // } else {
                 currCell.style.fontSize = '3.5vmin'
-                // }
                 i++
             })
         })
@@ -322,7 +309,7 @@ function init() {
 
 function handleHighlightCell(event) {
     let currCellObj = board[event.target.id]
-    if (currCellObj.revealed !== true) {
+    if (!currCellObj.revealed) {
         highlightedCell = event.target.id;
     }
     render();
@@ -350,6 +337,11 @@ function handleNumberClick(event) {
                         board[`R${currRow}C${idx}`].conflict = false
                     }
                 })
+                newCols2[currCol].forEach((num, idx) => {
+                    if (num === board[highlightedCell].numToShow) {
+                        board[`R${idx}C${currCol}`].conflict = false
+                    }
+                })
             }
             if (board[highlightedCell].numToShow === 0) {
                 board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
@@ -365,6 +357,11 @@ function handleNumberClick(event) {
                 numsToShow[currRow].forEach((num, idx) => {
                     if (num === board[highlightedCell].numToShow) {
                         board[`R${currRow}C${idx}`].conflict = false
+                    }
+                })
+                numsToShow[currCol].forEach((num, idx) => {
+                    if (num === board[highlightedCell].numToShow) {
+                        board[`R${idx}C${currCol}`].conflict = false
                     }
                 })
             }
@@ -404,7 +401,6 @@ function render() {
             if (currCellObj.numToShow !== 0) {
                 currCell.children[4].innerHTML = currCellObj.numToShow;
                 if (currCellObj.revealed === true) {
-                    currCell.removeEventListener('click', handleHighlightCell)
                     currCell.style.backgroundColor = 'rgb(232,232,232)';
                 } else {
                     currCell.style.fontSize = '3.5vmin'
@@ -420,7 +416,7 @@ function render() {
             if (currCellObj.id !== highlightedCell && currCellObj.revealed === false) {
                 currCell.style.backgroundColor = 'white'
             }
-            if (currCellObj.conflict === true) {
+            if (currCellObj.conflict) {
                 currCell.children[8].style.visibility = 'visible'
             } else {
                 currCell.children[8].style.visibility = 'hidden'
@@ -466,20 +462,43 @@ function render() {
     }
 
     function checkConflicts() {
+        let newCols = []
         numsToShow.forEach((row, idx1) => {
             let countOfEachNum = {}
             row.forEach((num, idx2) => {
                 countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
+                if (newCols[idx2]) {
+                    newCols[idx2].push(num)
+                } else {
+                    newCols[idx2] = [num]
+                }
             })
             for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
                 if (Object.entries(countOfEachNum)[i][1] > 1) {
                     row.forEach((num, idx3) => {
-                        let currConflictCell = board[`R${idx1}C${idx3}`]
+                        let currCell = board[`R${idx1}C${idx3}`]
                         if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
-                            currConflictCell.conflict = true
+                            currCell.conflict = true
                         }
                     })
-                } 
+                }
+            }
+        })
+        newCols2 = newCols
+        newCols.forEach((column, idx4) => {
+            let countOfEachNum = {}
+            column.forEach((num, idx5) => {
+                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
+            })
+            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
+                if (Object.entries(countOfEachNum)[i][1] > 1) {
+                        column.forEach((num, idx6) => {
+                            currCell = board[`R${idx6}C${idx4}`]
+                            if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                                currCell.conflict = true
+                            }
+                        })
+                }
             }
         })
     }
