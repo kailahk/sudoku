@@ -308,8 +308,6 @@ function init() {
 }
 
 function handleHighlightCell(event) {
-    let currCellObj = board[event.target.id]
-    console.log(event.target)
     if (event.target.id.length && !board[event.target.id].revealed) {
         highlightedCell = event.target.id;
     }
@@ -330,7 +328,6 @@ function handleNumberClick(event) {
     if (keyboardType === false) {
         if (event.target.innerHTML === 'X') {
             if (board[highlightedCell].conflict) {
-                console.log(board[highlightedCell].conflict)
                 board[highlightedCell].conflict = false
                 let currRow = parseInt(highlightedCell.split('')[1])
                 let currCol = parseInt(highlightedCell.split('')[3])
@@ -361,7 +358,7 @@ function handleNumberClick(event) {
                         board[`R${currRow}C${idx}`].conflict = false
                     }
                 })
-                numsToShow[currCol].forEach((num, idx) => {
+                newCols2[currCol].forEach((num, idx) => {
                     if (num === board[highlightedCell].numToShow) {
                         board[`R${idx}C${currCol}`].conflict = false
                     }
