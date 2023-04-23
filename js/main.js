@@ -327,12 +327,12 @@ function handleKeyboardSwitch(event) {
 }
 
 function handleNumberClick(event) {
-    if (keyboardType === false) {
-        if (event.target.innerHTML === 'X') {
+    if (event.target.innerHTML === 'X') {
+        {
             if (board[highlightedCell].conflict) {
                 board[highlightedCell].conflict = false
-                let currRow = parseInt(highlightedCell.split('')[1])
-                let currCol = parseInt(highlightedCell.split('')[3])
+                let currRow = board[highlightedCell].row
+                let currCol = board[highlightedCell].col
                 numsToShow[currRow].forEach((num, idx) => {
                     if (num === board[highlightedCell].numToShow) {
                         board[`R${currRow}C${idx}`].conflict = false
@@ -345,7 +345,6 @@ function handleNumberClick(event) {
                 })
                 let box = board[highlightedCell].box
                 boxVals[box].forEach((num, idx) => {
-                    console.log(num)
                     if (num === board[highlightedCell].numToShow) {
                         let column;
                         let row;
@@ -400,79 +399,76 @@ function handleNumberClick(event) {
                 board[highlightedCell].numToShow = 0
                 numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
             }
-        } else {
-            if (board[highlightedCell].conflict) {
-                board[highlightedCell].conflict = false
-                let currRow = parseInt(highlightedCell.split('')[1])
-                let currCol = parseInt(highlightedCell.split('')[3])
-                numsToShow[currRow].forEach((num, idx) => {
-                    if (num === board[highlightedCell].numToShow) {
-                        board[`R${currRow}C${idx}`].conflict = false
-                    }
-                })
-                columnVals[currCol].forEach((num, idx) => {
-                    if (num === board[highlightedCell].numToShow) {
-                        board[`R${idx}C${currCol}`].conflict = false
-                    }
-                })
-                let box = board[highlightedCell].box
-                boxVals[box].forEach((num, idx) => {
-                    console.log(num)
-                    if (num === board[highlightedCell].numToShow) {
-                        let column;
-                        let row;
-                        if (box < 3) {
-                            row = Math.floor(idx / 3)
-                        } else if (box < 6) {
-                            row = Math.floor(idx / 3) + 3
-                        } else if (box < 9) {
-                            row = Math.floor(idx / 3) + 6
-                        }
-                        if (idx === 0 || idx === 3 || idx === 6) {
-                            if (box === 0 || box === 3 || box === 6) {
-                                column = 0
-                            }
-                            if (box === 1 || box === 4 || box === 7) {
-                                column = 3
-                            }
-                            if (box === 2 || box === 5 || box === 8) {
-                                column = 6
-                            }
-                        }
-                        if (idx === 1 || idx === 4 || idx === 7) {
-                            if (box === 0 || box === 3 || box === 6) {
-                                column = 1
-                            }
-                            if (box === 1 || box === 4 || box === 7) {
-                                column = 4
-                            }
-                            if (box === 2 || box === 5 || box === 8) {
-                                column = 7
-                            }
-                        }
-                        if (idx === 2 || idx === 5 || idx === 8) {
-                            if (box === 0 || box === 3 || box === 6) {
-                                column = 2
-                            }
-                            if (box === 1 || box === 4 || box === 7) {
-                                column = 5
-                            }
-                            if (box === 2 || box === 5 || box === 8) {
-                                column = 8
-                            }
-                        }
-                        let currCell = board[`R${row}C${column}`]
-                        currCell.conflict = false
-                    }
-                })
-            }
-            board[highlightedCell].numToShow = parseInt(event.target.innerHTML)
-            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = parseInt(event.target.innerHTML)
         }
-    } else {
-        if (event.target.innerHTML === 'X') {
-            board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
+    }
+    if (!keyboardType) {
+        if (board[highlightedCell].conflict) {
+            board[highlightedCell].conflict = false
+            let currRow = board[highlightedCell].row
+            let currCol = board[highlightedCell].col
+            numsToShow[currRow].forEach((num, idx) => {
+                if (num === board[highlightedCell].numToShow) {
+                    board[`R${currRow}C${idx}`].conflict = false
+                }
+            })
+            columnVals[currCol].forEach((num, idx) => {
+                if (num === board[highlightedCell].numToShow) {
+                    board[`R${idx}C${currCol}`].conflict = false
+                }
+            })
+            let box = board[highlightedCell].box
+            boxVals[box].forEach((num, idx) => {
+                if (num === board[highlightedCell].numToShow) {
+                    let column;
+                    let row;
+                    if (box < 3) {
+                        row = Math.floor(idx / 3)
+                    } else if (box < 6) {
+                        row = Math.floor(idx / 3) + 3
+                    } else if (box < 9) {
+                        row = Math.floor(idx / 3) + 6
+                    }
+                    if (idx === 0 || idx === 3 || idx === 6) {
+                        if (box === 0 || box === 3 || box === 6) {
+                            column = 0
+                        }
+                        if (box === 1 || box === 4 || box === 7) {
+                            column = 3
+                        }
+                        if (box === 2 || box === 5 || box === 8) {
+                            column = 6
+                        }
+                    }
+                    if (idx === 1 || idx === 4 || idx === 7) {
+                        if (box === 0 || box === 3 || box === 6) {
+                            column = 1
+                        }
+                        if (box === 1 || box === 4 || box === 7) {
+                            column = 4
+                        }
+                        if (box === 2 || box === 5 || box === 8) {
+                            column = 7
+                        }
+                    }
+                    if (idx === 2 || idx === 5 || idx === 8) {
+                        if (box === 0 || box === 3 || box === 6) {
+                            column = 2
+                        }
+                        if (box === 1 || box === 4 || box === 7) {
+                            column = 5
+                        }
+                        if (box === 2 || box === 5 || box === 8) {
+                            column = 8
+                        }
+                    }
+                    let currCell = board[`R${row}C${column}`]
+                    currCell.conflict = false
+                }
+            })
         }
+        board[highlightedCell].numToShow = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
+        numsToShow[board[highlightedCell].row][board[highlightedCell].col] = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
+    } else if (keyboardType) {
         if (board[highlightedCell].candidates[event.target.innerHTML - 1]) {
             if (board[highlightedCell].numToShow === 0) {
                 board[highlightedCell].candidates[event.target.innerHTML - 1] = false
