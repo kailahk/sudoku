@@ -236,13 +236,6 @@ function init() {
                 }
                 currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
                 currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
-                currCell.children[8].style.backgroundColor = 'red'
-                currCell.children[8].style.height = '1vmin'
-                currCell.children[8].style.width = '1vmin'
-                currCell.children[8].style.borderRadius = '50%'
-                currCell.children[8].style.marginLeft = '.5vmin'
-                currCell.children[8].style.visibility = 'hidden'
-                let currCellObj = board[`R${rowIdx}C${boardCellIdx}`]
                 if (rowIdx === 2 || rowIdx === 5) {
                     currCell.style.borderBottom = '.5vmin solid grey'
                 }
@@ -327,8 +320,79 @@ function handleKeyboardSwitch(event) {
 }
 
 function handleNumberClick(event) {
+    if (board[highlightedCell].conflict) {
+        board[highlightedCell].conflict = false
+        let currRow = board[highlightedCell].row
+        let currCol = board[highlightedCell].col
+        numsToShow[currRow].forEach((num, idx) => {
+            if (num === board[highlightedCell].numToShow) {
+                board[`R${currRow}C${idx}`].conflict = false
+            }
+        })
+        columnVals[currCol].forEach((num, idx) => {
+            if (num === board[highlightedCell].numToShow) {
+                board[`R${idx}C${currCol}`].conflict = false
+            }
+        })
+        let box = board[highlightedCell].box
+        boxVals[box].forEach((num, idx) => {
+            if (num === board[highlightedCell].numToShow) {
+                let column;
+                let row;
+                if (box < 3) {
+                    row = Math.floor(idx / 3)
+                } else if (box < 6) {
+                    row = Math.floor(idx / 3) + 3
+                } else if (box < 9) {
+                    row = Math.floor(idx / 3) + 6
+                }
+                if (idx === 0 || idx === 3 || idx === 6) {
+                    if (box === 0 || box === 3 || box === 6) {
+                        column = 0
+                    }
+                    if (box === 1 || box === 4 || box === 7) {
+                        column = 3
+                    }
+                    if (box === 2 || box === 5 || box === 8) {
+                        column = 6
+                    }
+                }
+                if (idx === 1 || idx === 4 || idx === 7) {
+                    if (box === 0 || box === 3 || box === 6) {
+                        column = 1
+                    }
+                    if (box === 1 || box === 4 || box === 7) {
+                        column = 4
+                    }
+                    if (box === 2 || box === 5 || box === 8) {
+                        column = 7
+                    }
+                }
+                if (idx === 2 || idx === 5 || idx === 8) {
+                    if (box === 0 || box === 3 || box === 6) {
+                        column = 2
+                    }
+                    if (box === 1 || box === 4 || box === 7) {
+                        column = 5
+                    }
+                    if (box === 2 || box === 5 || box === 8) {
+                        column = 8
+                    }
+                }
+                let currCell = board[`R${row}C${column}`]
+                currCell.conflict = false
+            }
+        })
+    }
     if (event.target.innerHTML === 'X') {
-        {
+        if (board[highlightedCell].numToShow === 0) {
+            board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
+        } else {
+            board[highlightedCell].numToShow = 0
+            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
+        }
+    } if (event.target.innerHTML !== 'X') {
+        if (!keyboardType) {
             if (board[highlightedCell].conflict) {
                 board[highlightedCell].conflict = false
                 let currRow = board[highlightedCell].row
@@ -393,93 +457,22 @@ function handleNumberClick(event) {
                     }
                 })
             }
-            if (board[highlightedCell].numToShow === 0) {
-                board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
+            board[highlightedCell].numToShow = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
+            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
+        }
+        if (keyboardType) {
+            if (board[highlightedCell].candidates[event.target.innerHTML - 1]) {
+                if (board[highlightedCell].numToShow === 0) {
+                    board[highlightedCell].candidates[event.target.innerHTML - 1] = false
+                } else {
+                    board[highlightedCell].numToShow = 0
+                    numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
+                }
             } else {
+                board[highlightedCell].candidates[event.target.innerHTML - 1] = true;
                 board[highlightedCell].numToShow = 0
                 numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
             }
-        }
-    }
-    if (!keyboardType) {
-        if (board[highlightedCell].conflict) {
-            board[highlightedCell].conflict = false
-            let currRow = board[highlightedCell].row
-            let currCol = board[highlightedCell].col
-            numsToShow[currRow].forEach((num, idx) => {
-                if (num === board[highlightedCell].numToShow) {
-                    board[`R${currRow}C${idx}`].conflict = false
-                }
-            })
-            columnVals[currCol].forEach((num, idx) => {
-                if (num === board[highlightedCell].numToShow) {
-                    board[`R${idx}C${currCol}`].conflict = false
-                }
-            })
-            let box = board[highlightedCell].box
-            boxVals[box].forEach((num, idx) => {
-                if (num === board[highlightedCell].numToShow) {
-                    let column;
-                    let row;
-                    if (box < 3) {
-                        row = Math.floor(idx / 3)
-                    } else if (box < 6) {
-                        row = Math.floor(idx / 3) + 3
-                    } else if (box < 9) {
-                        row = Math.floor(idx / 3) + 6
-                    }
-                    if (idx === 0 || idx === 3 || idx === 6) {
-                        if (box === 0 || box === 3 || box === 6) {
-                            column = 0
-                        }
-                        if (box === 1 || box === 4 || box === 7) {
-                            column = 3
-                        }
-                        if (box === 2 || box === 5 || box === 8) {
-                            column = 6
-                        }
-                    }
-                    if (idx === 1 || idx === 4 || idx === 7) {
-                        if (box === 0 || box === 3 || box === 6) {
-                            column = 1
-                        }
-                        if (box === 1 || box === 4 || box === 7) {
-                            column = 4
-                        }
-                        if (box === 2 || box === 5 || box === 8) {
-                            column = 7
-                        }
-                    }
-                    if (idx === 2 || idx === 5 || idx === 8) {
-                        if (box === 0 || box === 3 || box === 6) {
-                            column = 2
-                        }
-                        if (box === 1 || box === 4 || box === 7) {
-                            column = 5
-                        }
-                        if (box === 2 || box === 5 || box === 8) {
-                            column = 8
-                        }
-                    }
-                    let currCell = board[`R${row}C${column}`]
-                    currCell.conflict = false
-                }
-            })
-        }
-        board[highlightedCell].numToShow = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
-        numsToShow[board[highlightedCell].row][board[highlightedCell].col] = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
-    } else if (keyboardType) {
-        if (board[highlightedCell].candidates[event.target.innerHTML - 1]) {
-            if (board[highlightedCell].numToShow === 0) {
-                board[highlightedCell].candidates[event.target.innerHTML - 1] = false
-            } else {
-                board[highlightedCell].numToShow = 0
-                numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
-            }
-        } else {
-            board[highlightedCell].candidates[event.target.innerHTML - 1] = true;
-            board[highlightedCell].numToShow = 0
-            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
         }
     }
     render();
@@ -497,6 +490,14 @@ function render() {
             checkConflicts()
             if (currCellObj.numToShow !== 0) {
                 currCell.children[4].innerHTML = currCellObj.numToShow;
+                currCell.children[0].style.visibility = 'hidden'
+                currCell.children[1].style.visibility = 'hidden'
+                currCell.children[2].style.visibility = 'hidden'
+                currCell.children[3].style.visibility = 'hidden'
+                currCell.children[5].style.visibility = 'hidden'
+                currCell.children[6].style.visibility = 'hidden'
+                currCell.children[7].style.visibility = 'hidden'
+                currCell.children[8].style.visibility = 'hidden'
                 if (currCellObj.revealed === true) {
                     currCell.style.backgroundColor = 'rgb(232,232,232)';
                 } else {
@@ -504,19 +505,24 @@ function render() {
                 }
             }
             if (currCellObj.numToShow === 0) {
-                if (currCellObj.candidates.every((candidate) => candidate === false)) {
-                    currCell.children[4].innerHTML = ''
-                } else {
-                    renderCandidates(currCellObj, currCell)
-                }
+                renderCandidates(currCellObj, currCell)
             }
             if (currCellObj.id !== highlightedCell && currCellObj.revealed === false) {
                 currCell.style.backgroundColor = 'white'
             }
             if (currCellObj.conflict) {
+                currCell.children[8].style.backgroundColor = 'red'
+                currCell.children[8].style.height = '1vmin'
+                currCell.children[8].style.width = '1vmin'
+                currCell.children[8].style.borderRadius = '50%'
+                currCell.children[8].style.marginLeft = '.5vmin'
                 currCell.children[8].style.visibility = 'visible'
+                currCell.children[8].innerHTML = ' '
             } else {
-                currCell.children[8].style.visibility = 'hidden'
+                currCell.children[8].style.backgroundColor = 'inherit'
+                currCell.children[8].style.marginLeft = '0'
+                currCell.children[8].style.borderRight = '.1vmin solid grey'
+                currCell.children[8].style.borderRadius = ' '
             }
             let highlightedCellEl = document.getElementById(highlightedCell)
             highlightedCellEl.style.backgroundColor = 'gold'
@@ -524,10 +530,13 @@ function render() {
     }
 
     function renderCandidates(currCellObj, currCell) {
-        let candidatesToRender = []
-        currCellObj.candidates.forEach((candidate, idx) => candidate === true ? candidatesToRender.push(idx + 1) : candidatesToRender.push(' '))
-        candidatesToRender.forEach((candidate, idx) => {
-            currCell.innerHTML = candidatesToRender.join('')
+        currCellObj.candidates.forEach((candidate, idx) => {
+            if (candidate) {
+                currCell.children[idx].innerHTML = idx + 1
+                currCell.children[idx].style.visibility = 'visible'
+            } else {
+                currCell.children[idx].innerHTML = ' '
+            }
             currCell.style.fontSize = '1vmin'
         })
     }
