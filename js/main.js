@@ -277,6 +277,7 @@ function init() {
                 seconds = `0${seconds}`
             }
             timerEl.innerHTML = `${minutes}:${seconds}`;
+            timerEl.style.fontSize = `2.5vmin`;
         }
         let clock = setInterval(updateTime, 1000);
     }
@@ -289,7 +290,7 @@ function init() {
         }
     }
 
-    winner = false;
+    winner;
     keyboardType = false;
     initTimer();
     initBoard();
@@ -317,6 +318,17 @@ function handleKeyboardSwitch(event) {
         keyboardType = true
     }
     render();
+}
+
+function checkForWinner() {
+    winner = true;
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (numsToShow[i][j] !== answer[i][j]) {
+                winner = false
+            }
+        }
+    }
 }
 
 function handleNumberClick(event) {
@@ -475,12 +487,14 @@ function handleNumberClick(event) {
             }
         }
     }
+    checkForWinner();
     render();
 }
 
 function render() {
-    renderBoard()
-    renderKeyboard()
+    renderBoard();
+    renderKeyboard();
+    renderWinner();
 
     function renderBoard() {
         for (let id = 0; id < 81; id++) {
@@ -498,7 +512,7 @@ function render() {
                 currCell.children[6].style.visibility = 'hidden'
                 currCell.children[7].style.visibility = 'hidden'
                 currCell.children[8].style.visibility = 'hidden'
-                if (currCellObj.revealed === true) {
+                if (currCellObj.revealed) {
                     currCell.style.backgroundColor = 'rgb(232,232,232)';
                 } else {
                     currCell.style.fontSize = '3.5vmin'
@@ -507,7 +521,7 @@ function render() {
             if (currCellObj.numToShow === 0) {
                 renderCandidates(currCellObj, currCell)
             }
-            if (currCellObj.id !== highlightedCell && currCellObj.revealed === false) {
+            if (currCellObj.id !== highlightedCell && !currCellObj.revealed) {
                 currCell.style.backgroundColor = 'white'
             }
             if (currCellObj.conflict) {
@@ -515,6 +529,7 @@ function render() {
                 currCell.children[8].style.height = '1vmin'
                 currCell.children[8].style.width = '1vmin'
                 currCell.children[8].style.borderRadius = '50%'
+                currCell.children[8].style.border = 'none'
                 currCell.children[8].style.marginLeft = '.5vmin'
                 currCell.children[8].style.visibility = 'visible'
                 currCell.children[8].innerHTML = ' '
@@ -692,6 +707,42 @@ function render() {
                 }
             }
         })
+    }
+    
+    function renderWinner() {
+        if (winner) {
+            allCells.removeEventListener('click', handleHighlightCell)
+            candidateBtnEl.removeEventListener('click', handleKeyboardSwitch)
+            normalBtnEl.removeEventListener('click', handleKeyboardSwitch)
+            let collectionOfBtns = [...document.getElementsByClassName('rounded')]
+            collectionOfBtns.forEach((button) => {
+                button.setAttribute('disabled', true)
+            })
+            let winningTime = timerEl.innerHTML
+            timerEl.innerHTML = ' '
+            let winningMessage = document.createElement('div')
+            winningMessage.innerHTML = `<h2>Congratulations!</h2><p>You won Sudoku in ${winningTime}</p><button id="button">PLAY AGAIN</button>`
+            winningMessage.style.backgroundColor = 'white'
+            winningMessage.style.height = '25vmin'
+            winningMessage.style.width = '40vmin'
+            winningMessage.style.padding = '5vmin'
+            winningMessage.style.border = '.5vmin solid grey'
+            winningMessage.style.display = 'flex'
+            winningMessage.style.flexDirection = 'column'
+            winningMessage.style.justifyContent = 'center'
+            winningMessage.style.alignItems = 'center'
+            winningMessage.style.position = 'absolute'
+            winningMessage.style.margin = '10vmin 0 0 1.6vmin'
+            allCells.appendChild(winningMessage)
+            let buttonEl = document.getElementById('button')
+            buttonEl.style.backgroundColor = 'black'
+            buttonEl.style.borderRadius = '5vmin'
+            buttonEl.style.border = 'none'
+            buttonEl.style.padding = '1vmin 2vmin'
+            buttonEl.style.color = 'white'
+            buttonEl.style.fontSize = '2.5vmin'
+            buttonEl.style.marginBottom = '2.5vmin'
+        }
     }
 }
 

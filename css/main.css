@@ -72,3 +72,11 @@ body {
     height: 4vmin;
     position: relative;
 }
+
+p {
+    font-size: 3vmin;
+}
+
+h2 {
+    font-size: 5.5vmin;
+}
