@@ -270,6 +270,9 @@ function init() {
         timer = 0;
         timerEl.innerHTML = '00:00'
         timerEl.style.fontSize = '2.5vmin'
+        if (timer === 0) {
+            resetTimer();
+        };
     }
 
     function initHighlightedCell() {
@@ -321,9 +324,6 @@ function checkForWinner() {
 }
 
 function handleNumberClick(event) {
-    if (timer === 0) {
-        resetTimer();
-    };
     if (board[highlightedCell].conflict) {
         board[highlightedCell].conflict = false
         let currRow = board[highlightedCell].row
