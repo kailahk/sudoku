@@ -32,8 +32,8 @@ let highlightedCell;
 const board = {};
 let answer = [];
 let numsToShow = [];
-let columnVals = [];
 let boxVals = [];
+let columnVals = [];
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -41,31 +41,23 @@ class Sudoku {
     constructor(N, K) {
         this.N = N;
         this.K = K;
-
         const SRNd = Math.sqrt(N);
         this.SRN = Math.floor(SRNd);
-
         this.mat = Array.from({
             length: N
         }, () => Array.from({
             length: N
         }, () => 0));
     }
-
     fillValues() {
         this.fillDiagonal();
-
         this.fillRemaining(0, this.SRN);
-
     }
-
     fillDiagonal() {
         for (let i = 0; i < this.N; i += this.SRN) {
-            // for diagonal box, start coordinates->i==j
             this.fillBox(i, i);
         }
     }
-
     unUsedInBox(rowStart, colStart, num) {
         for (let i = 0; i < this.SRN; i++) {
             for (let j = 0; j < this.SRN; j++) {
@@ -76,7 +68,6 @@ class Sudoku {
         }
         return true;
     }
-
     fillBox(row, col) {
         let num = 0;
         for (let i = 0; i < this.SRN; i++) {
@@ -91,11 +82,9 @@ class Sudoku {
             }
         }
     }
-
     randomGenerator(num) {
         return Math.floor(Math.random() * num + 1);
     }
-
     checkIfSafe(i, j, num) {
         return (
             this.unUsedInRow(i, num) &&
@@ -103,7 +92,6 @@ class Sudoku {
             this.unUsedInBox(i - (i % this.SRN), j - (j % this.SRN), num)
         );
     }
-
     unUsedInRow(i, num) {
         for (let j = 0; j < this.N; j++) {
             if (this.mat[i][j] === num) {
@@ -112,7 +100,6 @@ class Sudoku {
         }
         return true;
     }
-
     unUsedInCol(j, num) {
         for (let i = 0; i < this.N; i++) {
             if (this.mat[i][j] === num) {
@@ -121,21 +108,17 @@ class Sudoku {
         }
         return true;
     }
-
     fillRemaining(i, j) {
         if (i === this.N - 1 && j === this.N) {
             return true;
         }
-
         if (j === this.N) {
             i += 1;
             j = 0;
         }
-
         if (this.mat[i][j] !== 0) {
             return this.fillRemaining(i, j + 1);
         }
-
         for (let num = 1; num <= this.N; num++) {
             if (this.checkIfSafe(i, j, num)) {
                 this.mat[i][j] = num;
@@ -145,7 +128,6 @@ class Sudoku {
                 this.mat[i][j] = 0;
             }
         }
-
         return false;
     }
 
@@ -157,7 +139,6 @@ class Sudoku {
 
     removeKDigits() {
         let count = this.K;
-
         while (count !== 0) {
             let i = Math.floor(Math.random() * this.N);
             let j = Math.floor(Math.random() * this.N);
@@ -169,6 +150,10 @@ class Sudoku {
         numsToShow = this.mat
         return;
     }
+
+    initCellObjects() {
+        
+    }
 }
 
 
@@ -178,7 +163,6 @@ const timerEl = document.getElementById('timer')
 const candidateBtnEl = document.getElementById('candidate')
 const normalBtnEl = document.getElementById('normal')
 const keyboardEls = document.getElementById('keyboard').children
-const highlightedCellEl = document.getElementById(highlightedCell)
 const winningMessage = document.createElement('div')
 
 /*----- event listeners -----*/
@@ -200,11 +184,10 @@ function init() {
         sudoku.fillValues()
         sudoku.generateBoard()
         sudoku.removeKDigits()
-        initCells()
-        console.log(board)
+        initCellObjects()
     }
 
-    function initCells() {
+    function initCellObjects() {
         let i = 0;
         answer.forEach(function (row, rowIdx) {
             row.forEach(function (boardCell, boardCellIdx) {
@@ -234,8 +217,8 @@ function init() {
                 allCells.appendChild(currCell);
                 for (let i = 0; i < 9; i++) {
                     currCell.appendChild(document.createElement('div'))
-                    currCell.style.display = 'grid'
                 }
+                currCell.style.display = 'grid'
                 currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
                 currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
                 if (rowIdx === 2 || rowIdx === 5) {
@@ -253,7 +236,6 @@ function init() {
 
     function checkColandBox(rowNum, cellNum, id) {
         let currCell = board[`R${rowNum}C${cellNum}`]
-
         cols.forEach(function (column, colIdx) {
             if (column.includes(id)) {
                 currCell['col'] = colIdx;
@@ -324,38 +306,168 @@ function checkForWinner() {
 }
 
 function handleNumberClick(event) {
-    if (board[highlightedCell].conflict) {
-        board[highlightedCell].conflict = false
-        let currRow = board[highlightedCell].row
-        let currCol = board[highlightedCell].col
+    let currRow = board[highlightedCell].row
+    let currCol = board[highlightedCell].col
+    let currCell = board[highlightedCell]
+    if (currCell.conflict) {
+        currCell.conflict = false
         removeAllConflicts(currRow, currCol)
     }
+    boxVals = []
+    columnVals = []
     if (event.target.innerHTML === 'X') {
-        if (board[highlightedCell].numToShow === 0) {
-            board[highlightedCell].candidates = [false, false, false, false, false, false, false, false, false]
+        if (currCell.numToShow === 0) {
+            currCell.candidates = [false, false, false, false, false, false, false, false, false]
         } else {
-            board[highlightedCell].numToShow = 0
-            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
+            currCell.numToShow = 0
+            numsToShow[currRow][currCol] = 0
         }
-        // updateBoxVals and ColVals
     } else {
         if (!keyboardType) {
-            board[highlightedCell].numToShow = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
-            numsToShow[board[highlightedCell].row][board[highlightedCell].col] = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
+            currCell.numToShow = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
+            numsToShow[currRow][currCol] = parseInt(event.target.innerHTML) ? parseInt(event.target.innerHTML) : 0
         } else {
-            if (board[highlightedCell].candidates[event.target.innerHTML - 1]) {
-                if (board[highlightedCell].numToShow === 0) {
-                    board[highlightedCell].candidates[event.target.innerHTML - 1] = false
+            if (currCell.candidates[event.target.innerHTML - 1]) {
+                if (currCell.numToShow === 0) {
+                    currCell.candidates[event.target.innerHTML - 1] = false
                 } else {
-                    board[highlightedCell].numToShow = 0
-                    numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
+                    currCell.numToShow = 0
+                    numsToShow[currRow][currCol] = 0
                 }
             } else {
-                board[highlightedCell].candidates[event.target.innerHTML - 1] = true;
-                board[highlightedCell].numToShow = 0
-                numsToShow[board[highlightedCell].row][board[highlightedCell].col] = 0
+                currCell.candidates[event.target.innerHTML - 1] = true;
+                currCell.numToShow = 0
+                numsToShow[currRow][currCol] = 0
             }
         }
+    }
+    numsToShow.forEach((row, idx1) => {
+        row.forEach((num, idx2) => {
+            if (columnVals[idx2]) {
+                columnVals[idx2].push(num)
+            } else {
+                columnVals[idx2] = [num]
+            }
+            if (idx1 < 3) {
+                if (idx2 < 3) {
+                    boxVals[0] ? boxVals[0].push(num) : boxVals[0] = [num]
+                } else if (idx2 < 6) {
+                    boxVals[1] ? boxVals[1].push(num) : boxVals[1] = [num]
+                } else if (idx2 < 9) {
+                    boxVals[2] ? boxVals[2].push(num) : boxVals[2] = [num]
+                }
+            } else if (idx1 < 6) {
+                if (idx2 < 3) {
+                    boxVals[3] ? boxVals[3].push(num) : boxVals[3] = [num]
+                } else if (idx2 < 6) {
+                    boxVals[4] ? boxVals[4].push(num) : boxVals[4] = [num]
+                } else if (idx2 < 9) {
+                    boxVals[5] ? boxVals[5].push(num) : boxVals[5] = [num]
+                }
+            } else if (idx1 < 9) {
+                if (idx2 < 3) {
+                    boxVals[6] ? boxVals[6].push(num) : boxVals[6] = [num]
+                } else if (idx2 < 6) {
+                    boxVals[7] ? boxVals[7].push(num) : boxVals[7] = [num]
+                } else if (idx2 < 9) {
+                    boxVals[8] ? boxVals[8].push(num) : boxVals[8] = [num]
+                }
+            }
+        })
+    })
+    markConflicts()
+
+    function markConflicts() {
+        numsToShow.forEach((row, idx1) => {
+            let countOfEachNum = {}
+            row.forEach((num, idx2) => {
+                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
+            })
+            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
+                if (Object.entries(countOfEachNum)[i][1] > 1) {
+                    row.forEach((num, idx3) => {
+                        let currCell = board[`R${idx1}C${idx3}`]
+                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                            currCell.conflict = true
+                        }
+                    })
+                }
+            }
+        })
+        columnVals.forEach((column, idx4) => {
+            let countOfEachNum = {}
+            column.forEach((num, idx5) => {
+                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
+            })
+            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
+                if (Object.entries(countOfEachNum)[i][1] > 1) {
+                    column.forEach((num, idx6) => {
+                        currCell = board[`R${idx6}C${idx4}`]
+                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                            currCell.conflict = true
+                        }
+                    })
+                }
+            }
+        })
+        boxVals.forEach((box, idx7) => {
+            let countOfEachNum = {}
+            box.forEach((num, idx8) => {
+                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
+            })
+            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
+                if (Object.entries(countOfEachNum)[i][1] > 1) {
+                    box.forEach((num, idx9) => {
+                        let column;
+                        let row;
+                        if (idx7 < 3) {
+                            row = Math.floor(idx9 / 3)
+                        } else if (idx7 < 6) {
+                            row = Math.floor(idx9 / 3) + 3
+                        } else if (idx7 < 9) {
+                            row = Math.floor(idx9 / 3) + 6
+                        }
+                        if (idx9 === 0 || idx9 === 3 || idx9 === 6) {
+                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
+                                column = 0
+                            }
+                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
+                                column = 3
+                            }
+                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
+                                column = 6
+                            }
+                        }
+                        if (idx9 === 1 || idx9 === 4 || idx9 === 7) {
+                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
+                                column = 1
+                            }
+                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
+                                column = 4
+                            }
+                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
+                                column = 7
+                            }
+                        }
+                        if (idx9 === 2 || idx9 === 5 || idx9 === 8) {
+                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
+                                column = 2
+                            }
+                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
+                                column = 5
+                            }
+                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
+                                column = 8
+                            }
+                        }
+                        currCell = board[`R${row}C${column}`]
+                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
+                            currCell.conflict = true
+                        }
+                    })
+                }
+            }
+        })
     }
 
     function removeAllConflicts(currRow, currCol) {
@@ -453,7 +565,6 @@ function render() {
             let currCellName = Object.keys(board)[id]
             let currCellObj = board[currCellName]
             let currCell = document.getElementById(currCellName)
-            checkConflicts()
             if (currCellObj.numToShow !== 0) {
                 currCell.children[4].innerHTML = currCellObj.numToShow;
                 currCell.children[0].style.visibility = 'hidden'
@@ -533,134 +644,6 @@ function render() {
             }
         }
     }
-
-    function checkConflicts() {
-        let newCols = [];
-        let newBoxes = [];
-        numsToShow.forEach((row, idx1) => {
-            let countOfEachNum = {}
-            row.forEach((num, idx2) => {
-                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
-                if (newCols[idx2]) {
-                    newCols[idx2].push(num)
-                } else {
-                    newCols[idx2] = [num]
-                }
-                if (idx1 < 3) {
-                    if (idx2 < 3) {
-                        newBoxes[0] ? newBoxes[0].push(num) : newBoxes[0] = [num]
-                    } else if (idx2 < 6) {
-                        newBoxes[1] ? newBoxes[1].push(num) : newBoxes[1] = [num]
-                    } else if (idx2 < 9) {
-                        newBoxes[2] ? newBoxes[2].push(num) : newBoxes[2] = [num]
-                    }
-                } else if (idx1 < 6) {
-                    if (idx2 < 3) {
-                        newBoxes[3] ? newBoxes[3].push(num) : newBoxes[3] = [num]
-                    } else if (idx2 < 6) {
-                        newBoxes[4] ? newBoxes[4].push(num) : newBoxes[4] = [num]
-                    } else if (idx2 < 9) {
-                        newBoxes[5] ? newBoxes[5].push(num) : newBoxes[5] = [num]
-                    }
-                } else if (idx1 < 9) {
-                    if (idx2 < 3) {
-                        newBoxes[6] ? newBoxes[6].push(num) : newBoxes[6] = [num]
-                    } else if (idx2 < 6) {
-                        newBoxes[7] ? newBoxes[7].push(num) : newBoxes[7] = [num]
-                    } else if (idx2 < 9) {
-                        newBoxes[8] ? newBoxes[8].push(num) : newBoxes[8] = [num]
-                    }
-                }
-            })
-            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
-                if (Object.entries(countOfEachNum)[i][1] > 1) {
-                    row.forEach((num, idx3) => {
-                        let currCell = board[`R${idx1}C${idx3}`]
-                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
-                            currCell.conflict = true
-                        }
-                    })
-                }
-            }
-        })
-        columnVals = newCols
-        newCols.forEach((column, idx4) => {
-            let countOfEachNum = {}
-            column.forEach((num, idx5) => {
-                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
-            })
-            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
-                if (Object.entries(countOfEachNum)[i][1] > 1) {
-                    column.forEach((num, idx6) => {
-                        currCell = board[`R${idx6}C${idx4}`]
-                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
-                            currCell.conflict = true
-                        }
-                    })
-                }
-            }
-        })
-        boxVals = newBoxes
-        newBoxes.forEach((box, idx7) => {
-            let countOfEachNum = {}
-            box.forEach((num, idx8) => {
-                countOfEachNum[num] ? countOfEachNum[num]++ : countOfEachNum[num] = 1
-            })
-            for (let i = 1; i < Object.entries(countOfEachNum).length; i++) {
-                if (Object.entries(countOfEachNum)[i][1] > 1) {
-                    box.forEach((num, idx9) => {
-                        let column;
-                        let row;
-                        if (idx7 < 3) {
-                            row = Math.floor(idx9 / 3)
-                        } else if (idx7 < 6) {
-                            row = Math.floor(idx9 / 3) + 3
-                        } else if (idx7 < 9) {
-                            row = Math.floor(idx9 / 3) + 6
-                        }
-                        if (idx9 === 0 || idx9 === 3 || idx9 === 6) {
-                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
-                                column = 0
-                            }
-                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
-                                column = 3
-                            }
-                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
-                                column = 6
-                            }
-                        }
-                        if (idx9 === 1 || idx9 === 4 || idx9 === 7) {
-                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
-                                column = 1
-                            }
-                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
-                                column = 4
-                            }
-                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
-                                column = 7
-                            }
-                        }
-                        if (idx9 === 2 || idx9 === 5 || idx9 === 8) {
-                            if (idx7 === 0 || idx7 === 3 || idx7 === 6) {
-                                column = 2
-                            }
-                            if (idx7 === 1 || idx7 === 4 || idx7 === 7) {
-                                column = 5
-                            }
-                            if (idx7 === 2 || idx7 === 5 || idx7 === 8) {
-                                column = 8
-                            }
-                        }
-                        currCell = board[`R${row}C${column}`]
-                        if (num === parseInt(Object.entries(countOfEachNum)[i][0])) {
-                            currCell.conflict = true
-                        }
-                    })
-                }
-            }
-        })
-    }
-
 }
 
 function renderWinner() {
