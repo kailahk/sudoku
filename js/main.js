@@ -179,6 +179,7 @@ const candidateBtnEl = document.getElementById('candidate')
 const normalBtnEl = document.getElementById('normal')
 const keyboardEls = document.getElementById('keyboard').children
 const highlightedCellEl = document.getElementById(highlightedCell)
+const winningMessage = document.createElement('div')
 
 /*----- event listeners -----*/
 allCells.addEventListener('click', handleHighlightCell)
@@ -189,6 +190,7 @@ for (let i = 0; i < keyboardEls.length; i++) {
 }
 
 /*----- functions -----*/
+init();
 
 function init() {
     function initBoard() {
@@ -265,21 +267,9 @@ function init() {
     }
 
     function initTimer() {
-        let time = 0;
-        function updateTime() {
-            let minutes = Math.floor(time / 60);
-            let seconds = time % 60;
-            time++;
-            if (minutes.toString().length < 2) {
-                minutes = `0${minutes}`
-            }
-            if (seconds.toString().length < 2) {
-                seconds = `0${seconds}`
-            }
-            timerEl.innerHTML = `${minutes}:${seconds}`;
-            timerEl.style.fontSize = `2.5vmin`;
-        }
-        let clock = setInterval(updateTime, 1000);
+        timer = 0;
+        timerEl.innerHTML = '00:00'
+        timerEl.style.fontSize = '2.5vmin'
     }
 
     function initHighlightedCell() {
@@ -289,8 +279,7 @@ function init() {
             }
         }
     }
-
-    winner;
+    winner = false;
     keyboardType = false;
     initTimer();
     initBoard();
@@ -332,6 +321,9 @@ function checkForWinner() {
 }
 
 function handleNumberClick(event) {
+    if (timer === 0) {
+        resetTimer();
+    };
     if (board[highlightedCell].conflict) {
         board[highlightedCell].conflict = false
         let currRow = board[highlightedCell].row
@@ -491,10 +483,30 @@ function handleNumberClick(event) {
     render();
 }
 
+function resetTimer() {
+    function updateTime() {
+        let minutes = Math.floor(timer / 60);
+        let seconds = timer % 60;
+        timer++;
+        if (minutes.toString().length < 2) {
+            minutes = `0${minutes}`
+        }
+        if (seconds.toString().length < 2) {
+            seconds = `0${seconds}`
+        }
+        timerEl.innerHTML = `${minutes}:${seconds}`;
+        timerEl.style.fontSize = `2.5vmin`;
+        if (winner) {
+            clearInterval(clock);
+            renderWinner();
+        }
+    }
+    let clock = setInterval(updateTime, 1000);
+}
+
 function render() {
     renderBoard();
     renderKeyboard();
-    renderWinner();
 
     function renderBoard() {
         for (let id = 0; id < 81; id++) {
@@ -708,42 +720,37 @@ function render() {
             }
         })
     }
-    
-    function renderWinner() {
-        if (winner) {
-            allCells.removeEventListener('click', handleHighlightCell)
-            candidateBtnEl.removeEventListener('click', handleKeyboardSwitch)
-            normalBtnEl.removeEventListener('click', handleKeyboardSwitch)
-            let collectionOfBtns = [...document.getElementsByClassName('rounded')]
-            collectionOfBtns.forEach((button) => {
-                button.setAttribute('disabled', true)
-            })
-            let winningTime = timerEl.innerHTML
-            timerEl.innerHTML = ' '
-            let winningMessage = document.createElement('div')
-            winningMessage.innerHTML = `<h2>Congratulations!</h2><p>You won Sudoku in ${winningTime}</p><button id="button">PLAY AGAIN</button>`
-            winningMessage.style.backgroundColor = 'white'
-            winningMessage.style.height = '25vmin'
-            winningMessage.style.width = '40vmin'
-            winningMessage.style.padding = '5vmin'
-            winningMessage.style.border = '.5vmin solid grey'
-            winningMessage.style.display = 'flex'
-            winningMessage.style.flexDirection = 'column'
-            winningMessage.style.justifyContent = 'center'
-            winningMessage.style.alignItems = 'center'
-            winningMessage.style.position = 'absolute'
-            winningMessage.style.margin = '10vmin 0 0 1.6vmin'
-            allCells.appendChild(winningMessage)
-            let buttonEl = document.getElementById('button')
-            buttonEl.style.backgroundColor = 'black'
-            buttonEl.style.borderRadius = '5vmin'
-            buttonEl.style.border = 'none'
-            buttonEl.style.padding = '1vmin 2vmin'
-            buttonEl.style.color = 'white'
-            buttonEl.style.fontSize = '2.5vmin'
-            buttonEl.style.marginBottom = '2.5vmin'
-        }
-    }
+
 }
 
-init();
+function renderWinner() {
+    allCells.removeEventListener('click', handleHighlightCell)
+    candidateBtnEl.removeEventListener('click', handleKeyboardSwitch)
+    normalBtnEl.removeEventListener('click', handleKeyboardSwitch)
+    let collectionOfBtns = [...document.getElementsByClassName('rounded')]
+    collectionOfBtns.forEach((button) => {
+        button.setAttribute('disabled', true)
+    })
+    winningMessage.innerHTML = `<h2>Congratulations!</h2><p>You won Sudoku in ${timerEl.innerHTML}</p><button id="button">PLAY AGAIN</button>`
+    winningMessage.style.backgroundColor = 'white'
+    winningMessage.style.height = '25vmin'
+    winningMessage.style.width = '40vmin'
+    winningMessage.style.padding = '5vmin'
+    winningMessage.style.border = '.5vmin solid grey'
+    winningMessage.style.display = 'flex'
+    winningMessage.style.flexDirection = 'column'
+    winningMessage.style.justifyContent = 'center'
+    winningMessage.style.alignItems = 'center'
+    winningMessage.style.position = 'absolute'
+    winningMessage.style.margin = '10vmin 0 0 1.6vmin'
+    allCells.appendChild(winningMessage)
+    let buttonEl = document.getElementById('button')
+    buttonEl.style.backgroundColor = 'black'
+    buttonEl.style.borderRadius = '5vmin'
+    buttonEl.style.border = 'none'
+    buttonEl.style.padding = '1vmin 2vmin'
+    buttonEl.style.color = 'white'
+    buttonEl.style.fontSize = '2.5vmin'
+    buttonEl.style.marginBottom = '2.5vmin'
+}
+
