@@ -1,9 +1,17 @@
 * {
-    box-sizing:content-box
+    box-sizing: content-box
 }
+
 body {
     display: flex;
     flex-direction: column;
+    align-items: center;
+}
+
+#game {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
@@ -19,6 +27,7 @@ body {
     width: 55vmin;
     margin: 2vmin 0;
 }
+
 .cell {
     border: .1vmin solid grey;
     height: 6vmin;
@@ -26,6 +35,27 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#winning-message {
+    box-shadow: 0px 0px 10px #bbbbbb;
+    background-color: white;
+    height: 25vmin;
+    width: 40vmin;
+    padding: 5vmin;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    margin: 20vmin 0 0 0;
+    text-decoration: none
+}
+
+span {
+    content: "\272A";
+    color: orange;
+    transform: scale(4);
 }
 
 .header {
@@ -39,12 +69,14 @@ body {
     margin: 1vmin 0;
 }
 
-.number, .X {
+.number,
+.X {
     padding: .75vmin 1vmin;
     margin: .5vmin;
     border: .15vmin solid grey;
     font-weight: bolder;
-    background-color:rgb(232,232,232);
+    background-color: rgb(232, 232, 232);
+    height: 3vmin;
 }
 
 .numbersToggle {
@@ -53,19 +85,27 @@ body {
     justify-content: space-between;
 }
 
-#normal, #candidate {
+#normal,
+#candidate {
     width: 15vmin;
     font-size: 1.25vmin;
     font-weight: 200;
     padding: .75vmin 1vmin;
     background-color: white;
     border: .2vmin solid lightgray;
-    color: lightgray
+    color: lightgray;
+}
+
+#candidate {
+    border-top-right-radius: .25vmin;
+    border-bottom-right-radius: .25vmin;
 }
 
 #normal {
     background-color: black;
     color: white;
+    border-top-left-radius: .25vmin;
+    border-bottom-left-radius: .25vmin;
 }
 
 #timer {
@@ -74,9 +114,11 @@ body {
 }
 
 p {
-    font-size: 3vmin;
+    font-size: 2vmin;
 }
 
 h2 {
-    font-size: 5.5vmin;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 600;
+    font-size: 4vmin;
 }

@@ -1,3 +1,4 @@
+
 /*----- constants -----*/
 const cols = [
     [0, 9, 18, 27, 36, 45, 54, 63, 72],
@@ -34,6 +35,7 @@ let numsToShow = [];
 let boxVals = [];
 let columnVals = [];
 const board = {};
+
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -173,6 +175,7 @@ for (let i = 0; i < keyboardEls.length; i++) {
     keyboardEls[i].addEventListener('click', handleNumberClick)
 }
 
+
 /*----- functions -----*/
 init();
 
@@ -273,6 +276,7 @@ function init() {
     }
     winner = false;
     keyboardType = false;
+    drag = false;
     initTimer();
     initBoard();
     highlightedCell = initHighlightedCell();
@@ -283,21 +287,14 @@ function handleHighlightCell(event) {
     if (event.target.id.length && !board[event.target.id].revealed) {
         highlightedCell = event.target.id;
     }
-    if (!event.target.id.length) {
-        if (!board[event.target.parentElement.id].revealed) {
-            highlightedCell = event.target.parentElement.id;
-        }
+    if (!event.target.id.length && !board[event.target.parentElement.id].revealed) {
+        highlightedCell = event.target.parentElement.id;
     }
     render();
 }
 
 function handleKeyboardSwitch(event) {
-    if (event.target.id === 'normal') {
-        keyboardType = false
-    }
-    if (event.target.id === 'candidate') {
-        keyboardType = true
-    }
+    event.target.id === 'normal' ? keyboardType = false : keyboardType = true
     render();
 }
 
@@ -317,7 +314,6 @@ function handleNumberClick(event) {
     let currCol = board[highlightedCell].col
     let currCell = board[highlightedCell]
     if (currCell.conflict) {
-        currCell.conflict = false
         removeAllConflicts(currRow, currCol)
     }
     boxVals = []
@@ -348,42 +344,40 @@ function handleNumberClick(event) {
             }
         }
     }
-    numsToShow.forEach((row, idx1) => {
-        row.forEach((num, idx2) => {
-            if (columnVals[idx2]) {
-                columnVals[idx2].push(num)
-            } else {
-                columnVals[idx2] = [num]
-            }
-            if (idx1 < 3) {
-                if (idx2 < 3) {
-                    boxVals[0] ? boxVals[0].push(num) : boxVals[0] = [num]
-                } else if (idx2 < 6) {
-                    boxVals[1] ? boxVals[1].push(num) : boxVals[1] = [num]
-                } else if (idx2 < 9) {
-                    boxVals[2] ? boxVals[2].push(num) : boxVals[2] = [num]
+    updateColAndBoxVals();
+    markConflicts();
+    function updateColAndBoxVals() {
+        numsToShow.forEach((row, idx1) => {
+            row.forEach((num, idx2) => {
+                columnVals[idx2] ? columnVals[idx2].push(num) : columnVals[idx2] = [num]
+                if (idx1 < 3) {
+                    if (idx2 < 3) {
+                        boxVals[0] ? boxVals[0].push(num) : boxVals[0] = [num]
+                    } else if (idx2 < 6) {
+                        boxVals[1] ? boxVals[1].push(num) : boxVals[1] = [num]
+                    } else if (idx2 < 9) {
+                        boxVals[2] ? boxVals[2].push(num) : boxVals[2] = [num]
+                    }
+                } else if (idx1 < 6) {
+                    if (idx2 < 3) {
+                        boxVals[3] ? boxVals[3].push(num) : boxVals[3] = [num]
+                    } else if (idx2 < 6) {
+                        boxVals[4] ? boxVals[4].push(num) : boxVals[4] = [num]
+                    } else if (idx2 < 9) {
+                        boxVals[5] ? boxVals[5].push(num) : boxVals[5] = [num]
+                    }
+                } else if (idx1 < 9) {
+                    if (idx2 < 3) {
+                        boxVals[6] ? boxVals[6].push(num) : boxVals[6] = [num]
+                    } else if (idx2 < 6) {
+                        boxVals[7] ? boxVals[7].push(num) : boxVals[7] = [num]
+                    } else if (idx2 < 9) {
+                        boxVals[8] ? boxVals[8].push(num) : boxVals[8] = [num]
+                    }
                 }
-            } else if (idx1 < 6) {
-                if (idx2 < 3) {
-                    boxVals[3] ? boxVals[3].push(num) : boxVals[3] = [num]
-                } else if (idx2 < 6) {
-                    boxVals[4] ? boxVals[4].push(num) : boxVals[4] = [num]
-                } else if (idx2 < 9) {
-                    boxVals[5] ? boxVals[5].push(num) : boxVals[5] = [num]
-                }
-            } else if (idx1 < 9) {
-                if (idx2 < 3) {
-                    boxVals[6] ? boxVals[6].push(num) : boxVals[6] = [num]
-                } else if (idx2 < 6) {
-                    boxVals[7] ? boxVals[7].push(num) : boxVals[7] = [num]
-                } else if (idx2 < 9) {
-                    boxVals[8] ? boxVals[8].push(num) : boxVals[8] = [num]
-                }
-            }
+            })
         })
-    })
-    markConflicts()
-
+    }
     function markConflicts() {
         numsToShow.forEach((row, idx1) => {
             let countOfEachNum = {}
@@ -604,10 +598,9 @@ function render() {
                 currCell.children[8].style.visibility = 'visible'
                 currCell.children[8].innerHTML = ' '
             } else {
-                currCell.children[8].style.backgroundColor = 'inherit'
-                currCell.children[8].style.marginLeft = '0'
-                currCell.children[8].style.borderRight = '.1vmin solid grey'
-                currCell.children[8].style.borderRadius = ' '
+                currCell.children[8].style.backgroundColor = 'transparent'
+                currCell.children[8].style.marginBottom = '.5vmin'
+
             }
             document.getElementById(highlightedCell).style.backgroundColor = 'gold'
         }
@@ -636,7 +629,6 @@ function render() {
             normalBtnEl.style.borderColor = 'lightgrey';
             for (let i = 0; i < keyboardEls.length - 1; i++) {
                 keyboardEls[i].style.fontSize = '1.3vmin';
-                keyboardEls[i].style.height = '5vmin';
             }
         } else {
             candidateBtnEl.style.backgroundColor = 'white';
@@ -660,26 +652,22 @@ function renderWinner() {
     collectionOfBtns.forEach((button) => {
         button.setAttribute('disabled', true)
     })
-    winningMessage.innerHTML = `<h2>Congratulations!</h2><p>You won Sudoku in ${timerEl.innerHTML}</p><button id="button">PLAY AGAIN</button>`
-    winningMessage.style.backgroundColor = 'white'
-    winningMessage.style.height = '25vmin'
-    winningMessage.style.width = '40vmin'
-    winningMessage.style.padding = '5vmin'
-    winningMessage.style.border = '.5vmin solid grey'
-    winningMessage.style.display = 'flex'
-    winningMessage.style.flexDirection = 'column'
-    winningMessage.style.justifyContent = 'center'
-    winningMessage.style.alignItems = 'center'
-    winningMessage.style.position = 'absolute'
-    winningMessage.style.margin = '10vmin 0 0 1.6vmin'
-    allCells.appendChild(winningMessage)
+    winningMessage.innerHTML = `
+        <span>&#10026;</span>
+        <br>
+        <h2>Congrats!</h2>
+        <p>You finished a puzzle in ${timerEl.innerHTML}.</p>
+        <a href="index.html" ><button id="button">Play Another Sudoku</button><a/>`
+    winningMessage.setAttribute('id', 'winning-message')
+    document.querySelector('body').appendChild(winningMessage)
+    document.getElementById('game').style.opacity = '.2'
     let buttonEl = document.getElementById('button')
     buttonEl.style.backgroundColor = 'black'
     buttonEl.style.borderRadius = '5vmin'
     buttonEl.style.border = 'none'
     buttonEl.style.padding = '1vmin 2vmin'
     buttonEl.style.color = 'white'
-    buttonEl.style.fontSize = '2.5vmin'
+    buttonEl.style.fontSize = '1.5vmin'
     buttonEl.style.marginBottom = '2.5vmin'
 }
 
