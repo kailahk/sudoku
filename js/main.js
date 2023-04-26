@@ -29,11 +29,11 @@ let timer;
 let winner;
 let keyboardType; // false = normal, true = candidate
 let highlightedCell;
-const board = {};
 let answer = [];
 let numsToShow = [];
 let boxVals = [];
 let columnVals = [];
+const board = {};
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -188,11 +188,9 @@ function init() {
     }
 
     function initCellObjects() {
-        let i = 0;
         answer.forEach(function (row, rowIdx) {
             row.forEach(function (boardCell, boardCellIdx) {
                 board[`R${rowIdx}C${boardCellIdx}`] = {
-                    'id': i,
                     'value': boardCell,
                     'numToShow': numsToShow[rowIdx][boardCellIdx] === 0 ? 0 : boardCell,
                     'revealed': numsToShow[rowIdx][boardCellIdx] ? true : false,
@@ -407,7 +405,7 @@ function handleNumberClick(event) {
                             currCell.conflict = true
                         }
                     })
-                }
+                } 
             }
         })
         boxVals.forEach((box, idx7) => {
@@ -561,8 +559,8 @@ function render() {
     renderKeyboard();
 
     function renderBoard() {
-        for (let id = 0; id < 81; id++) {
-            let currCellName = Object.keys(board)[id]
+        for (let i = 0; i < 81; i++) {
+            let currCellName = Object.keys(board)[i]
             let currCellObj = board[currCellName]
             let currCell = document.getElementById(currCellName)
             if (currCellObj.numToShow !== 0) {
@@ -584,7 +582,7 @@ function render() {
             if (currCellObj.numToShow === 0) {
                 renderCandidates(currCellObj, currCell)
             }
-            if (currCellObj.id !== highlightedCell && !currCellObj.revealed) {
+            if (!currCellObj.revealed) {
                 currCell.style.backgroundColor = 'white'
             }
             if (currCellObj.conflict) {
@@ -602,8 +600,7 @@ function render() {
                 currCell.children[8].style.borderRight = '.1vmin solid grey'
                 currCell.children[8].style.borderRadius = ' '
             }
-            let highlightedCellEl = document.getElementById(highlightedCell)
-            highlightedCellEl.style.backgroundColor = 'gold'
+            document.getElementById(highlightedCell).style.backgroundColor = 'gold'
         }
     }
 
