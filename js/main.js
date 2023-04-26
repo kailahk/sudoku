@@ -152,7 +152,7 @@ class Sudoku {
     }
 
     initCellObjects() {
-        
+
     }
 }
 
@@ -188,6 +188,7 @@ function init() {
     }
 
     function initCellObjects() {
+        let i = 0;
         answer.forEach(function (row, rowIdx) {
             row.forEach(function (boardCell, boardCellIdx) {
                 board[`R${rowIdx}C${boardCellIdx}`] = {
@@ -208,28 +209,36 @@ function init() {
                     'row': rowIdx,
                     'conflict': false
                 }
-                checkColandBox(rowIdx, boardCellIdx, i)
-                let currCell = document.createElement('div');
-                currCell.setAttribute('id', `R${rowIdx}C${boardCellIdx}`);
-                currCell.setAttribute('class', 'cell')
-                allCells.appendChild(currCell);
-                for (let i = 0; i < 9; i++) {
-                    currCell.appendChild(document.createElement('div'))
-                }
-                currCell.style.display = 'grid'
-                currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
-                currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
-                if (rowIdx === 2 || rowIdx === 5) {
-                    currCell.style.borderBottom = '.5vmin solid grey'
-                }
-                if (cols[2].includes(boardCellIdx) || cols[5].includes(boardCellIdx)) {
-                    currCell.style.borderRight = '.5vmin solid grey'
-                    currCell.style.paddingRight = '.5vmin'
-                }
-                currCell.style.fontSize = '3.5vmin'
+                checkColandBox(rowIdx, boardCellIdx, i);
+                linkCellToDOM(rowIdx, boardCellIdx)
                 i++
             })
         })
+    }
+
+    function linkCellToDOM(rowIdx, boardCellIdx) {
+        let currCell = document.createElement('div');
+        currCell.setAttribute('id', `R${rowIdx}C${boardCellIdx}`);
+        currCell.setAttribute('class', 'cell')
+        allCells.appendChild(currCell);
+        currCell.style.fontSize = '3.5vmin'
+        if (rowIdx === 2 || rowIdx === 5) {
+            currCell.style.borderBottom = '.5vmin solid grey'
+        }
+        if (cols[2].includes(boardCellIdx) || cols[5].includes(boardCellIdx)) {
+            currCell.style.borderRight = '.5vmin solid grey'
+            currCell.style.paddingRight = '.5vmin'
+        }
+        createCandidateChildren(currCell)
+    }
+
+    function createCandidateChildren(currCell) {
+        for (let i = 0; i < 9; i++) {
+            currCell.appendChild(document.createElement('div'))
+        }
+        currCell.style.display = 'grid'
+        currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
+        currCell.style.gridTemplateRows = 'repeat(3, 2vmin)'
     }
 
     function checkColandBox(rowNum, cellNum, id) {
@@ -405,7 +414,7 @@ function handleNumberClick(event) {
                             currCell.conflict = true
                         }
                     })
-                } 
+                }
             }
         })
         boxVals.forEach((box, idx7) => {
