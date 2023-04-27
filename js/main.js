@@ -35,7 +35,7 @@ let numsToShow = [];
 let boxVals = [];
 let columnVals = [];
 const board = {};
-
+let numsToHide = []
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -237,7 +237,8 @@ function init() {
 
     function createCandidateChildren(currCell) {
         for (let i = 0; i < 9; i++) {
-            currCell.appendChild(document.createElement('div'))
+            let candidate = document.createElement('div')
+            currCell.appendChild(candidate)
         }
         currCell.style.display = 'grid'
         currCell.style.gridTemplateColumns = 'repeat(3, 2vmin)'
@@ -562,6 +563,7 @@ function render() {
     renderKeyboard();
 
     function renderBoard() {
+        let countOfEachNum = {}
         for (let i = 0; i < 81; i++) {
             let currCellName = Object.keys(board)[i]
             let currCellObj = board[currCellName]
@@ -603,6 +605,18 @@ function render() {
 
             }
             document.getElementById(highlightedCell).style.backgroundColor = 'gold'
+            if (countOfEachNum[currCellObj.numToShow]) {
+                countOfEachNum[currCellObj.numToShow]++
+            } else {
+                countOfEachNum[currCellObj.numToShow] = 1
+            }
+        }
+        for (let i = 1; i < 10; i++) {
+            if (countOfEachNum[i] > 8) {
+                [...document.getElementsByClassName('number')][i-1].style.color = 'grey'
+            } else {
+                [...document.getElementsByClassName('number')][i-1].style.color = 'black'
+            }
         }
     }
 
