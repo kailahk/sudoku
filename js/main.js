@@ -1,5 +1,7 @@
-
 /*----- constants -----*/
+const XVal = localStorage.getItem("localStorageX")
+const level = findLevel(XVal)
+
 const cols = [
     [0, 9, 18, 27, 36, 45, 54, 63, 72],
     [1, 10, 19, 28, 37, 46, 55, 64, 73],
@@ -35,7 +37,8 @@ let numsToShow = [];
 let boxVals = [];
 let columnVals = [];
 const board = {};
-let numsToHide = []
+let numsToHide = [];
+let K;
 
 // code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
@@ -167,6 +170,7 @@ const normalBtnEl = document.getElementById('normal')
 const keyboardEls = document.getElementById('keyboard').children
 const winningMessage = document.createElement('div')
 
+
 /*----- event listeners -----*/
 allCells.addEventListener('click', handleHighlightCell)
 normalBtnEl.addEventListener('click', handleKeyboardSwitch)
@@ -177,12 +181,23 @@ for (let i = 0; i < keyboardEls.length; i++) {
 
 
 /*----- functions -----*/
+
+function findLevel(X) {
+    if (X === '40') {
+        return 'Easy'
+    } else if (X === '45') {
+        return 'Medium'
+    } else {
+        return 'Hard'
+    }
+}
+
 init();
 
 function init() {
     function initBoard() {
         let N = 9
-        let K = 40
+        let K = XVal
         let sudoku = new Sudoku(N, K)
         sudoku.fillValues()
         sudoku.generateBoard()
@@ -670,18 +685,14 @@ function renderWinner() {
         <span>&#10026;</span>
         <br>
         <h2>Congrats!</h2>
-        <p>You finished a puzzle in ${timerEl.innerHTML}.</p>
+        <p>You finished ${level === 'Easy' ? 'an <span id="level">easy' : `a <span id="level">${level.toLowerCase()}`}</span> puzzle in ${timerEl.innerHTML}.</p>
         <a href="index.html" ><button id="button">Play Another Sudoku</button><a/>`
     winningMessage.setAttribute('id', 'winning-message')
     document.querySelector('body').appendChild(winningMessage)
     document.getElementById('game').style.opacity = '.2'
     let buttonEl = document.getElementById('button')
-    buttonEl.style.backgroundColor = 'black'
-    buttonEl.style.borderRadius = '5vmin'
-    buttonEl.style.border = 'none'
-    buttonEl.style.padding = '1vmin 2vmin'
-    buttonEl.style.color = 'white'
-    buttonEl.style.fontSize = '1.5vmin'
     buttonEl.style.marginBottom = '2.5vmin'
+    buttonEl.style.fontSize = '1.5vmin'
+    buttonEl.style.width = '20vmin'
 }
 

@@ -7,10 +7,35 @@ h1 {
     font-size: 4vmin;
 }
 
+h3 {
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 300;
+    font-size: 3.5vmin;
+    margin-bottom: 2.5vmin;
+}
+
+#home-title {
+    font-weight: 900;
+    font-size: 6vmin;
+}
+
+#home-choose {
+    font-weight: 600;
+}
+
+#date {
+    font-weight: 600;
+}
+
 body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#home-body {
+    background-color: rgb(255, 160, 18);
+    margin-top: 15vmin
 }
 
 #game {
@@ -20,11 +45,34 @@ body {
     align-items: center;
 }
 
+#home-buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+a > button {
+    background-color: black;
+    border-radius: 5vmin;
+    border: none;
+    padding: 1.8vmin;
+    margin: .5vmin;
+    color: white;
+    font-size: 2vmin;
+    width: 18vmin;
+    font-weight: 500;
+    letter-spacing: .1vmin;
+}
+
 #board {
     display: grid;
     grid-template-columns: repeat(9, 6vmin);
     grid-template-rows: auto;
     border: .5vmin solid black;
+}
+
+#level {
+    font-weight: 600;
+    color: black;
 }
 
 #divider {
@@ -45,7 +93,7 @@ body {
 #winning-message {
     box-shadow: 0px 0px 10px #bbbbbb;
     background-color: white;
-    height: 25vmin;
+    height: 30vmin;
     width: 40vmin;
     padding: 5vmin;
     display: flex;
@@ -126,4 +174,5 @@ h2 {
     font-family: 'Times New Roman', Times, serif;
     font-weight: 600;
     font-size: 4vmin;
+    padding: 1vmin;
 }
