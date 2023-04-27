@@ -1,5 +1,10 @@
 * {
-    box-sizing: content-box
+    box-sizing: content-box;
+}
+
+h1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 4vmin;
 }
 
 body {
