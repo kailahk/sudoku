@@ -40,7 +40,6 @@ const board = {};
 let numsToHide = [];
 let K;
 
-// code for Sudoku class sourced from: https://www.geeksforgeeks.org/program-sudoku-generator/
 class Sudoku {
 
     constructor(N, K) {
@@ -316,12 +315,9 @@ function handleKeyboardSwitch(event) {
 
 function checkForWinner() {
     winner = true;
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            if (numsToShow[i][j] !== answer[i][j]) {
-                winner = false
-            }
-        }
+    for (let i = 0; i < 81; i++) {
+        if (board[Object.keys(board)[i]].numToShow === 0) winner = false
+        if (board[Object.keys(board)[i]].conflict) winner = false
     }
 }
 
